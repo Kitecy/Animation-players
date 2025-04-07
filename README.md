@@ -2,6 +2,8 @@
 
 This package allows you to **quickly and easily create basic animations** in Unity **without writing any code**. It’s suitable for simple and intermediate animations like movement, scaling, rotation, and color changes.
 
+For detailed documentation, please refer to [Documentation.md](Documentation.md).
+
 ## 🔧 Features
 
 - Set up animations directly from the inspector
