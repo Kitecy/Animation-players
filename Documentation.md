@@ -5,7 +5,7 @@ simple DOTween animations without writing almost any code.
 
 ## 🚀 Install
 
-You can install this package using a special `link'.
+You can install this package using a special `https://github.com/Kitecy/Animation-players.git`.
 
 1. Open Unity
 2. Click the `Windows` button
