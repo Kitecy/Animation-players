@@ -18,6 +18,7 @@ namespace AnimationPlayers
         [SerializeField] private string _name;
         [SerializeField] private int _order;
         [SerializeField] private float _duration;
+        [SerializeField] private float _delay;
         [SerializeField] private bool _playOnEnable;
         [SerializeField] private AnimationType _type;
 
@@ -42,6 +43,8 @@ namespace AnimationPlayers
         public string Name => _name;
         public int Order => _order;
         public float Duration => _duration;
+        public float Delay => _delay;
+        public float TotalDuration => _duration + _delay;
         public bool PlayOnEnable => _playOnEnable;
         public AnimationType Type => _type;
 

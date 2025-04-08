@@ -6,17 +6,20 @@ namespace AnimationPlayers
     [CustomPropertyDrawer(typeof(Animation))]
     public class AnimationPropertyDrawer : PropertyDrawer
     {
-        private const int LinesCountWhenColorMode = 10;
-        private const int LinesCount = 9;
+        private const int LinesCountWhenColorMode = 12;
+        private const int LinesCount = 11;
 
-        private const int CropedLinesCountWhenColorMode = 8;
-        private const int CropedLinesCount = 7;
+        private const int CropedLinesCountWhenColorMode = 10;
+        private const int CropedLinesCount = 9;
 
         private string _nameOfNameField = "_name";
         private string _orderFieldName = "_order";
         private string _typeFieldName = "_type";
         private string _playOnEnableFieldName = "_playOnEnable";
         private string _durationFieldName = "_duration";
+
+        private string _defayFieldLabel = "Delay";
+        private string _delayFieldName = "_delay";
 
         private string _startPositionFieldName = "_startPosition";
         private string _endPositionFieldName = "_endPosition";
@@ -36,14 +39,17 @@ namespace AnimationPlayers
 
         private string _easeFieldName = "_ease";
 
+        private string _totalDurationHeader = "Total Duration";
+
         private SerializedProperty _typeProperty;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            property.serializedObject.Update();
             int line = 0;
             _typeProperty = property.FindPropertyRelative(_typeFieldName);
 
-            EditorGUI.BeginProperty(position, new GUIContent("Animation"), property);
+            EditorGUI.BeginProperty(position, label, property);
 
             property.isExpanded = EditorGUI.Foldout(GetLine(position, line), property.isExpanded, label);
             line++;
@@ -63,6 +69,14 @@ namespace AnimationPlayers
             }
 
             DrawField(property, _durationFieldName, position, ref line);
+            DrawDelayField(property, _defayFieldLabel, position, ref line);
+
+            GUI.enabled = false;
+            float totalDuration = property.FindPropertyRelative(_durationFieldName).floatValue + property.FindPropertyRelative(_delayFieldName).floatValue;
+            EditorGUI.FloatField(GetLine(position, line), _totalDurationHeader, totalDuration);
+            line++;
+            GUI.enabled = true;
+
             DrawField(property, _typeFieldName, position, ref line);
             DrawField(property, _playOnEnableFieldName, position, ref line);
 
@@ -73,6 +87,8 @@ namespace AnimationPlayers
             EditorGUI.indentLevel--;
 
             EditorGUI.EndProperty();
+
+            property.serializedObject.ApplyModifiedProperties();
         }
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
@@ -107,6 +123,13 @@ namespace AnimationPlayers
             SerializedProperty field = property.FindPropertyRelative(fieldName);
 
             EditorGUI.PropertyField(GetLine(position, line), field);
+            line++;
+        }
+
+        private void DrawDelayField(SerializedProperty property, string label, Rect position, ref int line)
+        {
+            SerializedProperty delayProperty = property.FindPropertyRelative(_delayFieldName);
+            delayProperty.floatValue = Mathf.Max(0, EditorGUI.FloatField(GetLine(position, line), label, delayProperty.floatValue));
             line++;
         }
 

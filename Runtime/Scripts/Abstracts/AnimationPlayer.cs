@@ -7,7 +7,7 @@ namespace AnimationPlayers
     using System.Threading.Tasks;
     using UnityEngine;
 
-    public abstract class AnimationPlayer : MonoBehaviour
+    public abstract class AnimationPlayer : MonoBehaviour, IPlayer
     {
         [SerializeField] protected List<Animation> Animations = new();
 
@@ -66,6 +66,30 @@ namespace AnimationPlayers
             await AsyncPlayAnimations(Animations);
         }
 
+        public void SetStartValue()
+        {
+            Animation firstAnimation = Animations.OrderBy(anim => anim.Order).First();
+
+            switch (firstAnimation.Type)
+            {
+                case Animation.AnimationType.Position:
+                    SetStartPositionValue(firstAnimation);
+                    break;
+
+                case Animation.AnimationType.Rotation:
+                    SetStartRotationValue(firstAnimation);
+                    break;
+
+                case Animation.AnimationType.Scale:
+                    SetStartScaleValue(firstAnimation);
+                    break;
+
+                case Animation.AnimationType.Color:
+                    SetStartColorValue(firstAnimation);
+                    break;
+            }
+        }
+
         private async Task AsyncPlayAnimations(List<Animation> animations)
         {
             int minOrder = animations.Min(x => x.Order);
@@ -74,7 +98,7 @@ namespace AnimationPlayers
             for (int order = minOrder; order <= maxOrder; order++)
             {
                 List<Animation> animationsWithCurrentOrder = animations.Where(x => x.Order == order).ToList();
-                Animation longestAnimation = animationsWithCurrentOrder.OrderBy(animation => animation.Duration).First();
+                Animation longestAnimation = animationsWithCurrentOrder.OrderBy(animation => animation.TotalDuration).First();
 
                 for (int i = 0; i < animationsWithCurrentOrder.Count; i++)
                     _ = AsyncProcessAnimation(animationsWithCurrentOrder[i]);
@@ -108,40 +132,42 @@ namespace AnimationPlayers
             }
         }
 
+        protected abstract void SetStartColorValue(Animation animation);
+
+        protected abstract void SetStartPositionValue(Animation animation);
+
         protected abstract Task AsyncPlayPositionAnimation(Animation animation);
 
         protected abstract Task AsyncPlayColorAnimation(Animation animation);
 
-        protected abstract void PlayPositionAnimation(Animation animation);
-
-        protected abstract void PlayColorAnimation(Animation animation);
-
         private async Task AsyncPlayRotationAnimation(Animation animation)
         {
-            CurrentTransform.rotation = Quaternion.Euler(animation.StartRotation);
-            Tween tween = CurrentTransform.DORotate(animation.EndRotation, animation.Duration).SetEase(animation.Ease);
+            SetStartRotationValue(animation);
+            Tween tween = CurrentTransform.DORotate(animation.EndRotation, animation.Duration)
+                .SetEase(animation.Ease)
+                .SetDelay(animation.Delay);
 
             await tween.AsyncWaitForCompletion();
         }
 
         private async Task AsyncPlayScaleAnimation(Animation animation)
         {
-            CurrentTransform.localScale = animation.StartScale;
-            Tween tween = CurrentTransform.DOScale(animation.EndScale, animation.Duration).SetEase(animation.Ease);
+            SetStartScaleValue(animation);
+            Tween tween = CurrentTransform.DOScale(animation.EndScale, animation.Duration)
+                .SetEase(animation.Ease)
+                .SetDelay(animation.Delay);
 
             await tween.AsyncWaitForCompletion();
         }
 
-        private void PlayRotationAnimation(Animation animation)
+        private void SetStartRotationValue(Animation animation)
         {
             CurrentTransform.rotation = Quaternion.Euler(animation.StartRotation);
-            CurrentTransform.DORotate(animation.EndRotation, animation.Duration).SetEase(animation.Ease);
         }
 
-        private void PlayScaleAnimation(Animation animation)
+        private void SetStartScaleValue(Animation animation)
         {
             CurrentTransform.localScale = animation.StartScale;
-            CurrentTransform.DOScale(animation.EndScale, animation.Duration).SetEase(animation.Ease);
         }
     }
 }
