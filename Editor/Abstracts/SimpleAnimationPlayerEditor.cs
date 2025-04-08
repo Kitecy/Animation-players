@@ -1,8 +1,8 @@
-using System.Reflection;
-using UnityEditor;
-
 namespace AnimationPlayers
 {
+    using System.Reflection;
+    using UnityEditor;
+
     [CustomEditor(typeof(SimpleAnimationPlayer))]
     public class SimpleAnimationPlayerEditor : BasePlayerEditor
     {

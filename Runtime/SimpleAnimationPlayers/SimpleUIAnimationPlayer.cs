@@ -1,8 +1,8 @@
-using DG.Tweening;
-using UnityEngine;
-
 namespace AnimationPlayers
 {
+    using DG.Tweening;
+    using UnityEngine;
+
     public sealed class SimpleUIAnimationPlayer : SimpleAnimationPlayer
     {
         private RectTransform _transform;

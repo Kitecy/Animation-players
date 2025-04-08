@@ -1,7 +1,7 @@
-using UnityEditor;
-
 namespace AnimationPlayers
 {
+    using UnityEditor;
+
     [CustomEditor(typeof(AnimationQueuePlayer))]
     public class AnimationQueuePlayerEditor : Editor
     {

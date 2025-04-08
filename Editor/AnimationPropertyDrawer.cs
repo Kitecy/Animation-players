@@ -1,9 +1,8 @@
-
-using UnityEditor;
-using UnityEngine;
-
 namespace AnimationPlayers
 {
+    using UnityEditor;
+    using UnityEngine;
+
     [CustomPropertyDrawer(typeof(Animation))]
     public class AnimationPropertyDrawer : PropertyDrawer
     {

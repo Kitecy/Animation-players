@@ -1,11 +1,11 @@
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEditor;
-using UnityEditorInternal;
-using UnityEngine;
-
 namespace AnimationPlayers
 {
+    using System.Collections.Generic;
+    using System.Reflection;
+    using UnityEditor;
+    using UnityEditorInternal;
+    using UnityEngine;
+
     [CustomEditor(typeof(AnimationPlayer))]
     public class AnimationPlayerEditor : BasePlayerEditor
     {

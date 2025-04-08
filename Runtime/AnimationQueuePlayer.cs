@@ -1,11 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using UnityEngine;
-
 namespace AnimationPlayers
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using UnityEngine;
+
     public sealed class AnimationQueuePlayer : MonoBehaviour
     {
         [SerializeField] private List<AnimationPlayer> _animationPlayers;

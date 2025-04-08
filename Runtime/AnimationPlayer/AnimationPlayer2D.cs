@@ -1,8 +1,8 @@
-using DG.Tweening;
-using System.Threading.Tasks;
-
 namespace AnimationPlayers
 {
+    using DG.Tweening;
+    using System.Threading.Tasks;
+
     public sealed class AnimationPlayer2D : AnimationPlayer
     {
         protected override async Task AsyncPlayColorAnimation(Animation animation)

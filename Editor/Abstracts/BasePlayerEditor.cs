@@ -1,9 +1,9 @@
-using System;
-using UnityEditor;
-using UnityEngine;
-
 namespace AnimationPlayers
 {
+    using System;
+    using UnityEditor;
+    using UnityEngine;
+
     public class BasePlayerEditor : Editor
     {
         [NonSerialized] protected Animation DrawableAnimation = null;

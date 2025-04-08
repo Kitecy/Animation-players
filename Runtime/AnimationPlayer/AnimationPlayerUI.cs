@@ -1,9 +1,9 @@
-using DG.Tweening;
-using System.Threading.Tasks;
-using UnityEngine;
-
 namespace AnimationPlayers
 {
+    using DG.Tweening;
+    using System.Threading.Tasks;
+    using UnityEngine;
+
     public sealed class AnimationPlayerUI : AnimationPlayer
     {
         private RectTransform _rectTransform;

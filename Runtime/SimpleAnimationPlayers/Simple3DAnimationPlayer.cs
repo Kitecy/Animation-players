@@ -1,7 +1,7 @@
-using DG.Tweening;
-
 namespace AnimationPlayers
 {
+    using DG.Tweening;
+
     public sealed class Simple3DAnimationPlayer : SimpleAnimationPlayer
     {
         protected override void PlayColorAnimation()

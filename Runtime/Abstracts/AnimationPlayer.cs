@@ -1,12 +1,12 @@
-using DG.Tweening;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using UnityEngine;
-
 namespace AnimationPlayers
 {
+    using DG.Tweening;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using UnityEngine;
+
     public abstract class AnimationPlayer : MonoBehaviour
     {
         [SerializeField] protected List<Animation> Animations = new();

@@ -1,9 +1,9 @@
-using DG.Tweening;
-using System;
-using UnityEngine;
-
 namespace AnimationPlayers
 {
+    using DG.Tweening;
+    using System;
+    using UnityEngine;
+
     public abstract class SimpleAnimationPlayer : MonoBehaviour
     {
         [SerializeField] protected Animation TargetAnimation;

@@ -1,14 +1,16 @@
 {
-    "name": "DOTween animations definition",
+    "name": "AnimationPlayers",
     "rootNamespace": "",
     "references": [
-        "DOTween.Modules"
+        "GUID:36273cf7a576c2941b3b58c4b8e4744e"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        ""
+    ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
