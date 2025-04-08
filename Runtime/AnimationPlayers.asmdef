@@ -2,7 +2,7 @@
     "name": "AnimationPlayers",
     "rootNamespace": "",
     "references": [
-        "GUID:36273cf7a576c2941b3b58c4b8e4744e"
+        "DOTween.Modules"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
