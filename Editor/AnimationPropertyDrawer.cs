@@ -30,9 +30,9 @@ namespace AnimationPlayers
         private string _startRotationFieldName = "_startRotation";
         private string _endRotationFieldName = "_endRotation";
 
-        private string _meshRendererFieldName = "_meshRenderer";
+        private string _rendererFieldName = "_renderer";
         private string _spriteRendererFieldName = "_spriteRenderer";
-        private string _graphicFieldName = "_graphics";
+        private string _graphicFieldName = "_graphic";
 
         private string _startColorFieldName = "_startColor";
         private string _endColorFieldName = "_endColor";
@@ -194,7 +194,7 @@ namespace AnimationPlayers
                     break;
 
                 case Simple3DAnimationPlayer:
-                    DrawField(property, _meshRendererFieldName, position, ref line);
+                    DrawField(property, _rendererFieldName, position, ref line);
                     break;
             }
 

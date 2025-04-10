@@ -8,7 +8,7 @@ namespace AnimationPlayers
         protected override async Task AsyncPlayColorAnimation(Animation animation)
         {
             SetStartColorValue(animation);
-            Tween tween = animation.MeshRenderer.material.DOColor(animation.EndColor, animation.Duration)
+            Tween tween = animation.Renderer.material.DOColor(animation.EndColor, animation.Duration)
                 .SetEase(animation.Ease)
                 .SetDelay(animation.Delay);
 
@@ -27,7 +27,7 @@ namespace AnimationPlayers
 
         protected override void SetStartColorValue(Animation animation)
         {
-            animation.MeshRenderer.material.color = animation.StartColor;
+            animation.Renderer.material.color = animation.StartColor;
         }
 
         protected override void SetStartPositionValue(Animation animation)

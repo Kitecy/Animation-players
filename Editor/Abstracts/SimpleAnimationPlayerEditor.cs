@@ -2,6 +2,7 @@ namespace AnimationPlayers
 {
     using System.Reflection;
     using UnityEditor;
+    using UnityEngine;
 
     [CustomEditor(typeof(SimpleAnimationPlayer))]
     public class SimpleAnimationPlayerEditor : BasePlayerEditor
@@ -11,6 +12,7 @@ namespace AnimationPlayers
         private void OnEnable()
         {
             InitializeAnimation();
+            Debug.Log(serializedObject.FindProperty(AnimationFieldName));
         }
 
         public override void OnInspectorGUI()

@@ -32,7 +32,7 @@ namespace AnimationPlayers
         [SerializeField] private Vector3 _endRotation;
 
         [SerializeField] private SpriteRenderer _spriteRenderer;
-        [SerializeField] private MeshRenderer _meshRenderer;
+        [SerializeField] private Renderer _renderer;
         [SerializeField] private Graphic _graphic;
 
         [SerializeField] private Color _startColor = Color.white;
@@ -58,7 +58,7 @@ namespace AnimationPlayers
         public Vector3 EndRotation => _endRotation;
 
         public SpriteRenderer SpriteRenderer => _spriteRenderer;
-        public MeshRenderer MeshRenderer => _meshRenderer;
+        public Renderer Renderer => _renderer;
         public Graphic Graphic => _graphic;
 
         public Color StartColor => _startColor;
