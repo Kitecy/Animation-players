@@ -340,6 +340,8 @@ public class Example : MonoBehaviour
 
 This component requires the presence of some kind of player on the object. Allows you to call the parent player first, and then the child players (simultaneously or by specifying the interval between calls).
 
+The component has a contextual method for automatically assigning all child players. To do this, right-click on the component, and then "Set all players".
+
 #### Example
 
 ```csharp

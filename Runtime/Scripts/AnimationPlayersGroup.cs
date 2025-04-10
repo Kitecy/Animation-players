@@ -6,12 +6,11 @@ namespace AnimationPlayers
     using System.Threading.Tasks;
     using UnityEngine;
 
-    [RequireComponent(typeof(IPlayer))]
     public class AnimationPlayersGroup : MonoBehaviour
     {
         [SerializeField, SerializeInterface(typeof(IPlayer))] private List<GameObject> _playersObjects;
         [SerializeField] private bool _playOnEnable;
-        [SerializeField] private float _interval;
+        [SerializeField] private float _interval = 0.125f;
 
         private IPlayer _player;
         private List<IPlayer> _players;
@@ -22,13 +21,14 @@ namespace AnimationPlayers
         {
             _players = _playersObjects.Select(p => p.GetComponent<IPlayer>()).ToList();
 
+            if (TryGetComponent(out IPlayer player))
+                _player = player;
+
             _intervalWait = new WaitForSeconds(_interval);
         }
 
         private void OnEnable()
         {
-            _player = GetComponent<IPlayer>();
-
             if (_playOnEnable)
                 StartCoroutine(PlayOnEnable());
         }
@@ -49,10 +49,13 @@ namespace AnimationPlayers
 
             SetStartsValues();
 
-            Task mainPlayerTask = AsyncProcessPlayer(_player);
+            if (_player != null)
+            {
+                Task mainPlayerTask = AsyncProcessPlayer(_player);
 
-            while (mainPlayerTask.IsCompleted == false)
-                yield return null;
+                while (mainPlayerTask.IsCompleted == false)
+                    yield return null;
+            }
 
             foreach (IPlayer player in _players)
             {
@@ -70,10 +73,13 @@ namespace AnimationPlayers
 
         private IEnumerator WaitForAwake()
         {
-            MonoBehaviour mainPlayerBehaviour = _player as MonoBehaviour;
+            if (_player != null)
+            {
+                MonoBehaviour mainPlayerBehaviour = _player as MonoBehaviour;
 
-            while (mainPlayerBehaviour.didAwake == false)
-                yield return null;
+                while (mainPlayerBehaviour.didAwake == false)
+                    yield return null;
+            }
 
             foreach (IPlayer player in _players)
             {

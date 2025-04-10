@@ -17,7 +17,7 @@ namespace AnimationPlayers
 
         [SerializeField] private string _name;
         [SerializeField] private int _order;
-        [SerializeField] private float _duration;
+        [SerializeField] private float _duration = 0.5f;
         [SerializeField] private float _delay;
         [SerializeField] private bool _playOnEnable;
         [SerializeField] private AnimationType _type;
@@ -26,7 +26,7 @@ namespace AnimationPlayers
         [SerializeField] private Vector3 _endPosition;
 
         [SerializeField] private Vector3 _startScale;
-        [SerializeField] private Vector3 _endScale;
+        [SerializeField] private Vector3 _endScale = Vector3.one;
 
         [SerializeField] private Vector3 _startRotation;
         [SerializeField] private Vector3 _endRotation;
@@ -35,8 +35,8 @@ namespace AnimationPlayers
         [SerializeField] private MeshRenderer _meshRenderer;
         [SerializeField] private Graphic _graphic;
 
-        [SerializeField] private Color _startColor;
-        [SerializeField] private Color _endColor;
+        [SerializeField] private Color _startColor = Color.white;
+        [SerializeField] private Color _endColor = Color.white;
 
         [SerializeField] private Ease _ease;
 
