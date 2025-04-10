@@ -1,6 +1,6 @@
 {
   "name": "com.kanty.animationplayers",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "displayName": "Animation Players",
   "description": "This package gives you the opportunity to use\r\nsimple DOTween animations without writing almost any code.",
   "unity": "2020.3",
