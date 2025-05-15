@@ -24,6 +24,31 @@ namespace AnimationPlayers
                 Play();
         }
 
+        private void OnDisable()
+        {
+            KillTweens();
+        }
+
+        private void KillTweens()
+        {
+            switch (TargetAnimation.Type)
+            {
+                case Animation.AnimationType.Position:
+                case Animation.AnimationType.Rotation:
+                case Animation.AnimationType.Scale:
+                    DOTween.Kill(CurrentTransform);
+                    break;
+
+                case Animation.AnimationType.Color:
+                    KillColorTween();
+                    break;
+
+                case Animation.AnimationType.Anchor:
+                    DOTween.Kill(CurrentTransform as RectTransform);
+                    break;
+            }
+        }
+
         public virtual void Play(Action onAnimationEnded = null)
         {
             if (onAnimationEnded != null)
@@ -100,6 +125,8 @@ namespace AnimationPlayers
                     break;
             }
         }
+
+        protected abstract void KillColorTween();
 
         protected abstract void SetStartColorValue();
 

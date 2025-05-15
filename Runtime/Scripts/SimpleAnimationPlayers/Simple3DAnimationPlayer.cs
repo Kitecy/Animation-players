@@ -16,6 +16,11 @@ namespace AnimationPlayers
             await tween.AsyncWaitForCompletion();
         }
 
+        protected override void KillColorTween()
+        {
+            DOTween.Kill(TargetAnimation.Renderer.material);
+        }
+
         protected override void SetStartColorValue()
         {
             TargetAnimation.Renderer.material.color = TargetAnimation.StartColor;

@@ -73,5 +73,10 @@ namespace AnimationPlayers
         {
             _rectTransform.anchoredPosition = animation.AnchoredStartPosition;
         }
+
+        protected override void KillColorTween(Animation animation)
+        {
+            DOTween.Kill(animation.Graphic);
+        }
     }
 }

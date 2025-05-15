@@ -28,6 +28,34 @@ namespace AnimationPlayers
                 _ = AsyncPlayAnimations(animations);
         }
 
+        private void OnDisable()
+        {
+            KillTweens();
+        }
+
+        private void KillTweens()
+        {
+            foreach (Animation animation in Animations)
+            {
+                switch (animation.Type)
+                {
+                    case Animation.AnimationType.Position:
+                    case Animation.AnimationType.Rotation:
+                    case Animation.AnimationType.Scale:
+                        DOTween.Kill(CurrentTransform);
+                        break;
+
+                    case Animation.AnimationType.Color:
+                        KillColorTween(animation);
+                        break;
+
+                    case Animation.AnimationType.Anchor:
+                        DOTween.Kill(CurrentTransform as RectTransform);
+                        break;
+                }
+            }
+        }
+
         public void Play(string animationName, Action onAnimationEnded = null)
         {
             Animation animation = Animations.Find(anim => anim.Name == animationName);
@@ -131,6 +159,8 @@ namespace AnimationPlayers
                     break;
             }
         }
+
+        protected abstract void KillColorTween(Animation animation);
 
         protected abstract void SetStartColorValue(Animation animation);
 

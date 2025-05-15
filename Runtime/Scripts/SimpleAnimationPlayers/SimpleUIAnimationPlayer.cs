@@ -114,5 +114,10 @@ namespace AnimationPlayers
 
             await tween.AsyncWaitForCompletion();
         }
+
+        protected override void KillColorTween()
+        {
+            DOTween.Kill(TargetAnimation.Graphic);
+        }
     }
 }

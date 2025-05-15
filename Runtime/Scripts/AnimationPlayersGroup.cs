@@ -47,8 +47,6 @@ namespace AnimationPlayers
         {
             yield return WaitForAwake();
 
-            SetStartsValues();
-
             if (_player != null)
             {
                 Task mainPlayerTask = AsyncProcessPlayer(_player);
@@ -65,12 +63,6 @@ namespace AnimationPlayers
             }
         }
 
-        private void SetStartsValues()
-        {
-            foreach (IPlayer player in _players)
-                player.SetStartValue();
-        }
-
         private IEnumerator WaitForAwake()
         {
             if (_player != null)
@@ -79,6 +71,8 @@ namespace AnimationPlayers
 
                 while (mainPlayerBehaviour.didAwake == false)
                     yield return null;
+
+                _player.SetStartValue();
             }
 
             foreach (IPlayer player in _players)
@@ -87,6 +81,8 @@ namespace AnimationPlayers
 
                 while (behaviour.didAwake == false)
                     yield return null;
+
+                player.SetStartValue();
             }
         }
 
