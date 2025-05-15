@@ -8,16 +8,16 @@ namespace AnimationPlayers
     {
         [NonSerialized] protected Animation DrawableAnimation = null;
 
-        private string _animationRecordName = "Animation Edit";
+        protected string AnimationRecordName = "Animation Edit";
 
-        private Vector3 _labelOffset = new(0, 0.4f, 0);
-        private int _labelFontSize = 30;
+        protected Vector3 LabelOffset = new(0, 0.4f, 0);
+        protected int LabelFontSize = 30;
 
-        private string _startPositionHandleName = "Start";
-        private Color _startPositionHandleColor = Color.green;
+        protected string StartPositionHandleName = "Start";
+        protected Color StartPositionHandleColor = Color.green;
 
-        private string _endPositionHandleName = "End";
-        private Color _endPositionHandleColor = Color.red;
+        protected string EndPositionHandleName = "End";
+        protected Color EndPositionHandleColor = Color.red;
 
         protected void OnSceneGUI()
         {
@@ -27,29 +27,29 @@ namespace AnimationPlayers
             }
         }
 
-        private void DrawHandles()
+        protected virtual void DrawHandles()
         {
             EditorGUI.BeginChangeCheck();
 
-            DrawLabel(DrawableAnimation.StartPosition + _labelOffset, _startPositionHandleName, _startPositionHandleColor);
-            DrawLabel(DrawableAnimation.EndPosition + _labelOffset, _endPositionHandleName, _endPositionHandleColor);
+            DrawLabel(DrawableAnimation.StartPosition + LabelOffset, StartPositionHandleName, StartPositionHandleColor);
+            DrawLabel(DrawableAnimation.EndPosition + LabelOffset, EndPositionHandleName, EndPositionHandleColor);
 
             Vector3 endPosition = Handles.PositionHandle(DrawableAnimation.EndPosition, Quaternion.identity);
-            Vector3 newPosition = Handles.PositionHandle(DrawableAnimation.StartPosition, Quaternion.identity);
-            Handles.DrawLine(newPosition, endPosition);
+            Vector3 startPosition = Handles.PositionHandle(DrawableAnimation.StartPosition, Quaternion.identity);
+            Handles.DrawLine(startPosition, endPosition);
 
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(serializedObject.targetObject, _animationRecordName);
-                DrawableAnimation.SetStartPosition(newPosition);
+                Undo.RecordObject(serializedObject.targetObject, AnimationRecordName);
+                DrawableAnimation.SetStartPosition(startPosition);
                 DrawableAnimation.SetEndPosition(endPosition);
             }
         }
 
-        private void DrawLabel(Vector3 position, string label, Color color)
+        protected void DrawLabel(Vector3 position, string label, Color color)
         {
             GUIStyle labelStyle = new();
-            labelStyle.fontSize = _labelFontSize;
+            labelStyle.fontSize = LabelFontSize;
             labelStyle.fontStyle = FontStyle.Bold;
             labelStyle.normal.textColor = color;
 

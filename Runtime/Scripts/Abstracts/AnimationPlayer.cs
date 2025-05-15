@@ -66,7 +66,7 @@ namespace AnimationPlayers
             await AsyncPlayAnimations(Animations);
         }
 
-        public void SetStartValue()
+        public virtual void SetStartValue()
         {
             Animation firstAnimation = Animations.OrderBy(anim => anim.Order).First();
 
@@ -110,7 +110,7 @@ namespace AnimationPlayers
             _onAnimationEnded = null;
         }
 
-        private async Task AsyncProcessAnimation(Animation animation)
+        protected virtual async Task AsyncProcessAnimation(Animation animation)
         {
             switch (animation.Type)
             {
@@ -134,30 +134,47 @@ namespace AnimationPlayers
 
         protected abstract void SetStartColorValue(Animation animation);
 
-        protected abstract void SetStartPositionValue(Animation animation);
-
-        protected abstract Task AsyncPlayPositionAnimation(Animation animation);
-
         protected abstract Task AsyncPlayColorAnimation(Animation animation);
 
-        private async Task AsyncPlayRotationAnimation(Animation animation)
+        protected async Task AsyncPlayRotationAnimation(Animation animation)
         {
             SetStartRotationValue(animation);
             Tween tween = CurrentTransform.DORotate(animation.EndRotation, animation.Duration)
                 .SetEase(animation.Ease)
-                .SetDelay(animation.Delay);
+                .SetDelay(animation.Delay)
+                .SetLoops(animation.Loops, animation.LoopType)
+                .SetAutoKill(animation.AutoKill);
 
             await tween.AsyncWaitForCompletion();
         }
 
-        private async Task AsyncPlayScaleAnimation(Animation animation)
+        protected async Task AsyncPlayScaleAnimation(Animation animation)
         {
             SetStartScaleValue(animation);
             Tween tween = CurrentTransform.DOScale(animation.EndScale, animation.Duration)
                 .SetEase(animation.Ease)
-                .SetDelay(animation.Delay);
+                .SetDelay(animation.Delay)
+                .SetLoops(animation.Loops, animation.LoopType)
+                .SetAutoKill(animation.AutoKill);
 
             await tween.AsyncWaitForCompletion();
+        }
+
+        protected async Task AsyncPlayPositionAnimation(Animation animation)
+        {
+            SetStartPositionValue(animation);
+            Tween tween = CurrentTransform.DOMove(animation.EndPosition, animation.Duration)
+                .SetEase(animation.Ease)
+                .SetDelay(animation.Delay)
+                .SetLoops(animation.Loops, animation.LoopType)
+                .SetAutoKill(animation.AutoKill);
+
+            await tween.AsyncWaitForCompletion();
+        }
+
+        private void SetStartPositionValue(Animation animation)
+        {
+            CurrentTransform.position = animation.StartPosition;
         }
 
         private void SetStartRotationValue(Animation animation)

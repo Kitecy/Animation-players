@@ -10,17 +10,9 @@ namespace AnimationPlayers
             SetStartColorValue(animation);
             Tween tween = animation.Renderer.material.DOColor(animation.EndColor, animation.Duration)
                 .SetEase(animation.Ease)
-                .SetDelay(animation.Delay);
-
-            await tween.AsyncWaitForCompletion();
-        }
-
-        protected override async Task AsyncPlayPositionAnimation(Animation animation)
-        {
-            SetStartPositionValue(animation);
-            Tween tween = CurrentTransform.DOMove(animation.EndPosition, animation.Duration)
-                .SetEase(animation.Ease)
-                .SetDelay(animation.Delay);
+                .SetDelay(animation.Delay)
+                .SetLoops(animation.Loops, animation.LoopType)
+                .SetAutoKill(animation.AutoKill);
 
             await tween.AsyncWaitForCompletion();
         }
@@ -28,11 +20,6 @@ namespace AnimationPlayers
         protected override void SetStartColorValue(Animation animation)
         {
             animation.Renderer.material.color = animation.StartColor;
-        }
-
-        protected override void SetStartPositionValue(Animation animation)
-        {
-            CurrentTransform.position = animation.StartPosition;
         }
     }
 }

@@ -12,7 +12,8 @@ namespace AnimationPlayers
             Position,
             Scale,
             Rotation,
-            Color
+            Color,
+            Anchor
         }
 
         [SerializeField] private string _name;
@@ -20,10 +21,18 @@ namespace AnimationPlayers
         [SerializeField] private float _duration = 0.5f;
         [SerializeField] private float _delay;
         [SerializeField] private bool _playOnEnable;
+        [SerializeField] private bool _autoKill;
+
+        [SerializeField] private LoopType _loopType;
+        [SerializeField] private int _loops = 1;
+
         [SerializeField] private AnimationType _type;
 
         [SerializeField] private Vector3 _startPosition;
         [SerializeField] private Vector3 _endPosition;
+
+        [SerializeField] private Vector2 _anchoredStartPosition;
+        [SerializeField] private Vector2 _anchoredEndPosition;
 
         [SerializeField] private Vector3 _startScale;
         [SerializeField] private Vector3 _endScale = Vector3.one;
@@ -46,10 +55,18 @@ namespace AnimationPlayers
         public float Delay => _delay;
         public float TotalDuration => _duration + _delay;
         public bool PlayOnEnable => _playOnEnable;
+        public bool AutoKill => _autoKill;
+
+        public LoopType LoopType => _loopType;
+        public int Loops => _loops;
+
         public AnimationType Type => _type;
 
         public Vector3 StartPosition => _startPosition;
         public Vector3 EndPosition => _endPosition;
+
+        public Vector2 AnchoredStartPosition => _anchoredStartPosition;
+        public Vector2 AnchoredEndPosition => _anchoredEndPosition;
 
         public Vector3 StartScale => _startScale;
         public Vector3 EndScale => _endScale;

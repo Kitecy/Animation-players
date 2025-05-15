@@ -1,4 +1,4 @@
-namespace AnimationPlayers
+﻿namespace AnimationPlayers
 {
     using UnityEditor;
 

@@ -4,7 +4,7 @@ namespace AnimationPlayers
     using System.Threading.Tasks;
     using UnityEngine;
 
-    public sealed class AnimationPlayerUI : AnimationPlayer
+    public sealed class AnimationPlayerUI : AnimationPlayer, IUIPlayer
     {
         private RectTransform _rectTransform;
 
@@ -14,34 +14,64 @@ namespace AnimationPlayers
             _rectTransform = GetComponent<RectTransform>();
         }
 
+        protected override async Task AsyncProcessAnimation(Animation animation)
+        {
+            switch (animation.Type)
+            {
+                case Animation.AnimationType.Position:
+                    await AsyncPlayPositionAnimation(animation);
+                    break;
+
+                case Animation.AnimationType.Rotation:
+                    await AsyncPlayRotationAnimation(animation);
+                    break;
+
+                case Animation.AnimationType.Scale:
+                    await AsyncPlayScaleAnimation(animation);
+                    break;
+
+                case Animation.AnimationType.Color:
+                    await AsyncPlayColorAnimation(animation);
+                    break;
+
+                case Animation.AnimationType.Anchor:
+                    await AsyncPlayAnchorAnimation(animation);
+                    break;
+            }
+        }
+
         protected override async Task AsyncPlayColorAnimation(Animation animation)
         {
             SetStartColorValue(animation);
             Tween tween = animation.Graphic.DOColor(animation.EndColor, animation.Duration)
                 .SetEase(animation.Ease)
-                .SetDelay(animation.Delay);
+                .SetDelay(animation.Delay)
+                .SetLoops(animation.Loops, animation.LoopType)
+                .SetAutoKill(animation.AutoKill);
 
             await tween.AsyncWaitForCompletion();
         }
 
-        protected override async Task AsyncPlayPositionAnimation(Animation animation)
+        private async Task AsyncPlayAnchorAnimation(Animation animation)
         {
-            SetStartPositionValue(animation);
-            Tween tween = _rectTransform.DOMove(animation.EndPosition, animation.Duration)
+            SetStartAnchorValue(animation);
+            Tween tween = _rectTransform.DOAnchorPos(animation.AnchoredEndPosition, animation.Duration)
                 .SetEase(animation.Ease)
-                .SetDelay(animation.Delay);
+                .SetDelay(animation.Delay)
+                .SetLoops(animation.Loops, animation.LoopType)
+                .SetAutoKill(animation.AutoKill);
 
             await tween.AsyncWaitForCompletion();
-        }
-
-        protected override void SetStartPositionValue(Animation animation)
-        {
-            _rectTransform.position = animation.StartPosition;
         }
 
         protected override void SetStartColorValue(Animation animation)
         {
             animation.Graphic.color = animation.StartColor;
+        }
+
+        private void SetStartAnchorValue(Animation animation)
+        {
+            _rectTransform.anchoredPosition = animation.AnchoredStartPosition;
         }
     }
 }

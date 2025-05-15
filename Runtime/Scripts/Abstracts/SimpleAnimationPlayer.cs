@@ -11,7 +11,7 @@ namespace AnimationPlayers
 
         protected Transform CurrentTransform;
 
-        private Action _onAnimationEnded;
+        protected Action OnAnimationEnded;
 
         protected virtual void Awake()
         {
@@ -24,54 +24,62 @@ namespace AnimationPlayers
                 Play();
         }
 
-        public void Play(Action onAnimationEnded = null)
+        public virtual void Play(Action onAnimationEnded = null)
         {
             if (onAnimationEnded != null)
-                _onAnimationEnded = onAnimationEnded;
+                OnAnimationEnded = onAnimationEnded;
 
             switch (TargetAnimation.Type)
             {
                 case Animation.AnimationType.Position:
+                    SetStartPositionValue();
                     _ = AsyncPlayPositionAnimation();
                     break;
 
                 case Animation.AnimationType.Scale:
+                    SetStartScaleValue();
                     _ = AsyncPlayScaleAnimation();
                     break;
 
                 case Animation.AnimationType.Rotation:
+                    SetStartRotationValue();
                     _ = AsyncPlayRotationAnimation();
                     break;
 
                 case Animation.AnimationType.Color:
+                    SetStartColorValue();
                     _ = AsyncPlayColorAnimation();
                     break;
             }
         }
 
-        public async Task AsyncPlay()
+        public virtual async Task AsyncPlay()
         {
             switch (TargetAnimation.Type)
             {
                 case Animation.AnimationType.Position:
+                    SetStartPositionValue();
                     await AsyncPlayPositionAnimation();
                     break;
 
                 case Animation.AnimationType.Scale:
+                    SetStartScaleValue();
                     await AsyncPlayScaleAnimation();
                     break;
 
                 case Animation.AnimationType.Rotation:
+                    SetStartRotationValue();
                     await AsyncPlayRotationAnimation();
                     break;
 
                 case Animation.AnimationType.Color:
+                    SetStartColorValue();
                     await AsyncPlayColorAnimation();
                     break;
             }
         }
 
-        public void SetStartValue()
+        public virtual void SetStartValue()
         {
             switch (TargetAnimation.Type)
             {
@@ -95,44 +103,58 @@ namespace AnimationPlayers
 
         protected abstract void SetStartColorValue();
 
-        protected abstract void SetStartPositionValue();
-
         protected abstract Task AsyncPlayColorAnimation();
 
-        protected abstract Task AsyncPlayPositionAnimation();
-
-        private async Task AsyncPlayScaleAnimation()
+        protected async Task AsyncPlayPositionAnimation()
         {
-            SetStartScaleValue();
-            Tween tween = CurrentTransform.DOScale(TargetAnimation.EndScale, TargetAnimation.Duration)
+            Tween tween = CurrentTransform.DOMove(TargetAnimation.EndPosition, TargetAnimation.Duration)
                 .SetEase(TargetAnimation.Ease)
-                .SetDelay(TargetAnimation.Delay);
+                .SetDelay(TargetAnimation.Delay)
+                .SetLoops(TargetAnimation.Loops, TargetAnimation.LoopType)
+                .SetAutoKill(TargetAnimation.AutoKill);
 
             await tween.AsyncWaitForCompletion();
         }
 
-        private async Task AsyncPlayRotationAnimation()
+        protected async Task AsyncPlayScaleAnimation()
         {
-            SetStartRotationValue();
+            Tween tween = CurrentTransform.DOScale(TargetAnimation.EndScale, TargetAnimation.Duration)
+                .SetEase(TargetAnimation.Ease)
+                .SetDelay(TargetAnimation.Delay)
+                .SetLoops(TargetAnimation.Loops, TargetAnimation.LoopType)
+                .SetAutoKill(TargetAnimation.AutoKill);
+
+            await tween.AsyncWaitForCompletion();
+        }
+
+        protected async Task AsyncPlayRotationAnimation()
+        {
             Tween tween = CurrentTransform.DORotate(TargetAnimation.EndRotation, TargetAnimation.Duration)
                 .SetEase(TargetAnimation.Ease)
-                .SetDelay(TargetAnimation.Delay);
+                .SetDelay(TargetAnimation.Delay)
+                .SetLoops(TargetAnimation.Loops, TargetAnimation.LoopType)
+                .SetAutoKill(TargetAnimation.AutoKill);
 
             await tween.AsyncWaitForCompletion();
         }
 
         protected void OnAnimationCompleted()
         {
-            _onAnimationEnded?.Invoke();
-            _onAnimationEnded = null;
+            OnAnimationEnded?.Invoke();
+            OnAnimationEnded = null;
         }
 
-        private void SetStartScaleValue()
+        protected void SetStartPositionValue()
+        {
+            transform.position = TargetAnimation.StartPosition;
+        }
+
+        protected void SetStartScaleValue()
         {
             CurrentTransform.localScale = TargetAnimation.StartScale;
         }
 
-        private void SetStartRotationValue()
+        protected void SetStartRotationValue()
         {
             CurrentTransform.rotation = Quaternion.Euler(TargetAnimation.StartRotation);
         }

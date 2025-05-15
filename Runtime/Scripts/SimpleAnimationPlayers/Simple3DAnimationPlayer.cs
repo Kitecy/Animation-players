@@ -7,20 +7,11 @@ namespace AnimationPlayers
     {
         protected override async Task AsyncPlayColorAnimation()
         {
-            SetStartColorValue();
             Tween tween = TargetAnimation.Renderer.material.DOColor(TargetAnimation.EndColor, TargetAnimation.Duration)
                 .SetEase(TargetAnimation.Ease)
-                .SetDelay(TargetAnimation.Delay);
-
-            await tween.AsyncWaitForCompletion();
-        }
-
-        protected override async Task AsyncPlayPositionAnimation()
-        {
-            SetStartPositionValue();
-            Tween tween = CurrentTransform.DOMove(TargetAnimation.EndPosition, TargetAnimation.Duration)
-                .SetEase(TargetAnimation.Ease)
-                .SetDelay(TargetAnimation.Delay);
+                .SetDelay(TargetAnimation.Delay)
+                .SetLoops(TargetAnimation.Loops, TargetAnimation.LoopType)
+                .SetAutoKill(TargetAnimation.AutoKill);
 
             await tween.AsyncWaitForCompletion();
         }
@@ -28,11 +19,6 @@ namespace AnimationPlayers
         protected override void SetStartColorValue()
         {
             TargetAnimation.Renderer.material.color = TargetAnimation.StartColor;
-        }
-
-        protected override void SetStartPositionValue()
-        {
-            CurrentTransform.position = TargetAnimation.StartPosition;
         }
     }
 }

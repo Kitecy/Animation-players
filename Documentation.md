@@ -21,13 +21,16 @@ You also need to install [DOTween](http://dotween.demigiant.com/) in your projec
 ### Abstracts
 1. AnimationPlayer
 2. SimpleAnimationPlayer
+3. AdditiveAnimatoinPlayer
 
 ---
 ### Objects
 1. Animation
+2. AdditiveAnimation
 
 ### Interfaces
 1. IPlayer
+2. IUIPlayer
 
 ### Attributes
 1. SerializeInterfaceAttribute
@@ -41,6 +44,11 @@ You also need to install [DOTween](http://dotween.demigiant.com/) in your projec
 1. Simple2DAnimationPlayer
 2. Simple3DAnimationPlayer
 3. SimpleUIAnimationPlayer
+---
+### AdditiveAnimationPlayer components
+1. AdditiveAnimationPlayer2D
+2. AdditiveAnimationPlayer3D
+3. AdditiveAnimationPlayerUI
 ---
 ### Other components
 1. AnimationQueuePlayer 
@@ -111,7 +119,34 @@ public class Example : MonoBehaviour
     }
 }
 ```
+---
+### AdditiveAnimationPlayer
+The component is used to add new values to the current values and play this as an animation.
 
+|Methods|Description|
+|-------|----------|
+|```Add()```|Add value and play animation|
+|```AsyncAdd(Action onCompleteCallback)```|Add value and play animation asynchronously|
+|```SetStartValue()```|Sets the starting value from the animation|
+
+### Example
+```csharp
+public class Example : MonoBehaviour 
+{
+    [SerializeField] private AdditiveAnimationPlayer _player;
+
+    private void Start()
+    {
+        _player.Add();
+        _player.AsyncAdd(OnComplete);
+    }
+
+    private void OnComplete()
+    {
+        //Do something...
+    }
+}
+```
 ## Objects
 
 ### `Animation`
@@ -126,6 +161,9 @@ The object is used to represent the required animation.
 |`float Delay`|Delay in animation playback|
 |`float TotalDuration`|The sum of the animation duration and its delay. Read-only|
 |`bool PlayOnEnable`|Whether to enable animation when activating an object|
+|`bool AutoKill`|Is it necessary to destroy the animation after its completion or not|
+|`int Loops`|The number of animation cycles (at -1, the animation repeats indefinitely)|
+|`LoopType LoopType`|Loops type|
 |`AnimationType Type`|Animation type|
 |`Vector3 StartPosition`|Starting position for position animation|
 |`Vector3 EndPosition`|The final position to animate the position|
@@ -144,6 +182,27 @@ The object is used to represent the required animation.
 |```SetStartPosition(Vector3 position)```|Sets the value for StartPosition|
 |```SetEndPosition(Vector3 position)```|Sets the value for EndPosition|
 
+---
+### `AdditiveAnimation`
+
+The object is used to play the animation of changing the value.
+
+|Properties|Description|
+|----------|-----------|
+|`Vector3 AdditivePosition`|The value added to the current position of the object|
+|`Vector3 AdditiveScale`|The value added to the current scale of the object|
+|`Vector3 AdditiveRotation`|The value added to the current rotation of the object|
+|`Color AdditiveColor`|The value added to the current color of the object|
+|`float Duration`|Animation duration|
+|`float Delay`|Delay in animation playback|
+|`bool PlayOnEnable`|Whether to enable animation when activating an object|
+|`float TotalDuration`|The sum of the animation duration and its delay. Read-only|
+|`AdditiveAnimationType Type`|Animation type|
+|`Renderer Renderer`|The Renderer component for 3d color animation|
+|`SpriteRenderer SpriteRenderer`|SpriteRenderer component for 2d color animation|
+|`Graphic Graphic`|Graphic component for UI color animation|
+---
+
 ## Interfaces
 
 ### `IPlayer`
@@ -153,6 +212,11 @@ The interface marks the object as an animation player. Such an object must imple
 |Methods|Description|
 |-------|----------|
 |```SetStartValue()```|Sets the starting value from the animation|
+
+---
+### `IUIPlayer`
+
+The interface marks the object as an ui animation player.
 
 ## Attributes
 
@@ -303,6 +367,59 @@ public class Example : MonoBehaviour
     private void Start() 
     {
         _playerUI.Play(AnimationName);
+    }
+}
+```
+
+## AdditiveAnimationPlayer components
+
+### `AdditiveAnimationPlayer2D : AdditiveAnimationPlayer`
+
+The component is designed to interact with 2D objects. Using it with UI or 3D objects can lead to unexpected errors! Inherits methods of the `AdditiveAnimationPlayer` class.
+
+#### Example
+```csharp
+public class Example : MonoBehaviour
+{
+    [SerializeField] private AdditiveAnimationPlayer2D _player2D;
+
+    private void Start()
+    {
+        _player2D.Add();
+    }
+}
+```
+---
+### `AdditiveAnimationPlayer3D : AdditiveAnimationPlayer`
+
+The component is designed to interact with 3D objects. Using it with 2D or UI objects can lead to unexpected errors! Inherits methods of the `AdditiveAnimationPlayer` class.
+
+#### Example
+```csharp
+public class Example : MonoBehaviour
+{
+    [SerializeField] private AdditiveAnimationPlayer3D _player3D;
+
+    private void Start()
+    {
+        _player3D.Add();
+    }
+}
+```
+---
+### `AdditiveAnimationPlayerUI : AdditiveAnimationPlayer`
+
+The component is designed to interact with UI objects. Using it with 2D or 3D objects can lead to unexpected errors! Inherits methods of the `AdditiveAnimationPlayer` class.
+
+#### Example
+```csharp
+public class Example : MonoBehaviour
+{
+    [SerializeField] private AdditiveAnimationPlayerUI _playerUI;
+
+    private void Start()
+    {
+        _playerUI.Add();
     }
 }
 ```
