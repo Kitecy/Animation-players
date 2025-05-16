@@ -27,7 +27,7 @@ namespace AnimationPlayers
 
         private readonly string _totalDurationLabel = "Total Duration";
 
-        private readonly string _onEnableFieldName = "_onEnable";
+        private readonly string _onEnableFieldName = "_playOnEnable";
         private readonly string _typeFieldName = "_type";
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)

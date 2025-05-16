@@ -35,7 +35,14 @@ namespace AnimationPlayers
 
         public async void Play()
         {
-            await AsyncProcessPlayer(_player);
+            foreach (IPlayer player in _players)
+                player.SetStartValue();
+
+            if (_player != null)
+            {
+                _player.SetStartValue();
+                await AsyncProcessPlayer(_player);
+            }
 
             foreach (IPlayer player in _players)
             {
