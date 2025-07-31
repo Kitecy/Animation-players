@@ -16,8 +16,6 @@ namespace AnimationPlayers.Players
         [SerializeField] private float _interval = 0.125f;
         [SerializeField] private bool _playOnEnable;
 
-        private bool _isFirstOnEnable = true;
-
         private WaitForSeconds _intervalWait;
 
         private int _currentPlayer = -1;
@@ -29,14 +27,6 @@ namespace AnimationPlayers.Players
                 _player = null;
                 Debug.LogError(_error);
             }
-        }
-
-        private void OnEnable()
-        {
-            if (_isFirstOnEnable == false && _playOnEnable)
-                Play();
-
-            _isFirstOnEnable = false;
         }
 
         public override void Play(Action onCompleteCallback = null)
