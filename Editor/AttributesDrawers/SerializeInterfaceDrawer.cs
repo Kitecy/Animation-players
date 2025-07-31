@@ -1,5 +1,6 @@
-namespace AnimationPlayers
+namespace AnimationPlayers.Editor
 {
+    using AnimationPlayers.Players;
     using System;
     using System.Collections.Generic;
     using UnityEditor;

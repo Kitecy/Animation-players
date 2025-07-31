@@ -1,0 +1,19 @@
+{
+    "name": "AnimationPlayersEditor",
+    "rootNamespace": "AnimationPlayers.Editor",
+    "references": [
+        "GUID:de54fd117b3d11a49ae5c522afa7fd1d",
+        "GUID:e1dca1bb757e5824592dd38b73548199"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

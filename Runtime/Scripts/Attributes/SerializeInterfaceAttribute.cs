@@ -1,8 +1,8 @@
-namespace AnimationPlayers
-{
-    using System;
-    using UnityEngine;
+using System;
+using UnityEngine;
 
+namespace AnimationPlayers.Players
+{
     public class SerializeInterfaceAttribute : PropertyAttribute
     {
         public SerializeInterfaceAttribute(Type type)

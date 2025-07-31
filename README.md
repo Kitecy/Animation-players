@@ -22,6 +22,7 @@ For detailed documentation, please refer to [Documentation.md](Documentation.md)
 To use this package, you will need:
 
 - ✅ [DOTween](http://dotween.demigiant.com/) — install via [Asset Store](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676) or manually.
+- ✅ [UniTask](https://github.com/Cysharp/UniTask) — install via [GitHub](https://github.com/Cysharp/UniTask?tab=readme-ov-file#install-via-git-url)
 - ✅ In the DOTween settings, click **"Create ASMDEF..."** to create the Assembly Definition file.
 
 Once these steps are completed, the package will be ready to use.
