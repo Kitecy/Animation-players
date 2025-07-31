@@ -18,7 +18,6 @@ namespace AnimationPlayers.Players
 
         public override void Play(Action onCompleteCallback = null)
         {
-            Debug.Log(1234);
             List<Sequence> sequences = PrepareForPlay();
 
             if (sequences.Count <= 0)
