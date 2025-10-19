@@ -2,8 +2,8 @@
     "name": "AnimationPlayersPlayers",
     "rootNamespace": "AnimationPlayers.Players",
     "references": [
-        "GUID:36273cf7a576c2941b3b58c4b8e4744e",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
+        "DOTween.Modules",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
