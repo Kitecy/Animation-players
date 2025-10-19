@@ -37,12 +37,11 @@ namespace AnimationPlayers.Players
 
             if (_player != null)
             {
-                _player.Play(() => StartCoroutine(ProcessNext(onCompleteCallback)));
+                StartCoroutine(ProcessSelf(onCompleteCallback));
                 return;
             }
 
-            _currentPlayer++;
-            _players.First().Play(() => StartCoroutine(ProcessNext(onCompleteCallback)));
+            StartCoroutine(ProcessNext(onCompleteCallback));
         }
 
         public override async UniTask AsyncPlay()
@@ -53,13 +52,13 @@ namespace AnimationPlayers.Players
 
             if (_player != null)
             {
-                await _player.AsyncPlay();
+                _player.Play();
                 await UniTask.Delay(delay);
             }
 
             for (int i = 0; i < _players.Count; i++)
             {
-                await _players[i].AsyncPlay();
+                _players[i].Play();
 
                 if (i < _players.Count - 1)
                     await UniTask.Delay(delay);
@@ -77,15 +76,33 @@ namespace AnimationPlayers.Players
             _players = players;
         }
 
-        private IEnumerator ProcessNext(Action onCompleteCallback = null)
+        private IEnumerator ProcessSelf(Action onCompleteCallback = null)
         {
+            _player.Play();
+
             yield return _intervalWait;
 
+            if (_currentPlayer < _players.Count)
+            {
+                StartCoroutine(ProcessNext(onCompleteCallback));
+            }
+
+            onCompleteCallback?.Invoke();
+            _currentPlayer = 0;
+        }
+
+        private IEnumerator ProcessNext(Action onCompleteCallback = null)
+        {
             _currentPlayer++;
 
             if (_currentPlayer < _players.Count)
             {
-                _players[_currentPlayer].Play(() => StartCoroutine(ProcessNext(onCompleteCallback)));
+                _players[_currentPlayer].Play();
+
+                yield return _intervalWait;
+
+                StartCoroutine(ProcessNext(onCompleteCallback));
+
                 yield break;
             }
 
