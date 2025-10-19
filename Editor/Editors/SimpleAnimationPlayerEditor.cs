@@ -16,9 +16,9 @@ namespace AnimationPlayers.Editor
 
         public override void OnInspectorGUI()
         {
-            base.OnInspectorGUI();
-
             serializedObject.Update();
+
+            base.OnInspectorGUI();
 
             SerializedProperty playableAnimationField = serializedObject.FindProperty(_animationFieldName);
 

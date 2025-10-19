@@ -37,15 +37,11 @@ namespace AnimationPlayers.Editor
 
         public override void OnInspectorGUI()
         {
-            serializedObject.Update();
-
             SerializedProperty isUIField = serializedObject.FindProperty(_isUiFieldName);
             SerializedProperty autoCallField = serializedObject.FindProperty(_autoCallFieldName);
 
             EditorGUILayout.PropertyField(isUIField);
             EditorGUILayout.PropertyField(autoCallField);
-
-            serializedObject.ApplyModifiedProperties();
         }
 
         protected virtual void DrawHandles()

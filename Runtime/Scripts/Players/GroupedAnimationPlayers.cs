@@ -41,6 +41,7 @@ namespace AnimationPlayers.Players
                 return;
             }
 
+            _currentPlayer++;
             _players.First().Play(() => StartCoroutine(ProcessNext(onCompleteCallback)));
         }
 
@@ -94,7 +95,8 @@ namespace AnimationPlayers.Players
 
         public override void Prepare()
         {
-            _player.Prepare();
+            if (_player != null)
+                _player.Prepare();
 
             foreach (BasePlayer player in _players)
                 player.Prepare();

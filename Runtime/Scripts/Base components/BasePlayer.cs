@@ -26,6 +26,9 @@ namespace AnimationPlayers.Players
         {
             _parentPlayer = GetComponentInParent<GroupedAnimationPlayers>();
 
+            if (_parentPlayer == this)
+                _parentPlayer = null;
+
             if (_parentPlayer != null)
                 return;
 
