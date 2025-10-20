@@ -22,7 +22,7 @@ namespace AnimationPlayers.Players
         {
             _currentSequences = PrepareForPlay();
 
-            if (_currentSequences.Count <= 0)
+            if (_currentSequences.Count == 0)
                 return;
 
             Sequence lastSequence = _currentSequences.Last();
@@ -44,7 +44,7 @@ namespace AnimationPlayers.Players
 
             _currentSequences = PrepareForPlay();
 
-            if (_currentSequences.Count <= 0)
+            if (_currentSequences.Count == 0)
                 return;
 
             Sequence lastSequence = _currentSequences.Last();

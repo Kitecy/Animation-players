@@ -37,12 +37,17 @@ namespace AnimationPlayers.Players
 
         public override void Play(Action onCompleteCallback = null)
         {
+            if (_players.Count == 0)
+                return;
+
             PlayInternal(onCompleteCallback).Forget();
         }
 
         private async UniTaskVoid PlayInternal(Action onCompleteCallback)
         {
-            if (_player.didStart == false)
+            if (_player != null && _player.didStart == false)
+                await UniTask.Yield();
+            else if (_players.First()?.didStart == false)
                 await UniTask.Yield();
 
             await AsyncPlay();
@@ -51,6 +56,9 @@ namespace AnimationPlayers.Players
 
         public override async UniTask AsyncPlay()
         {
+            if (_players.Count == 0)
+                return;
+
             Prepare();
 
             TimeSpan delay = TimeSpan.FromSeconds(_interval);

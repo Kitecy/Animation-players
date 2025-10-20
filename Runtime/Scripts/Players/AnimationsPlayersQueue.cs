@@ -14,12 +14,18 @@ namespace AnimationPlayers.Players
 
         public override void Play(Action onCompleteCallback = null)
         {
+            if (_players.Count == 0)
+                return;
+
             Prepare();
             _players.First().Play(() => PlayNext(onCompleteCallback));
         }
 
         public override async UniTask AsyncPlay()
         {
+            if (_players.Count == 0)
+                return;
+
             if (OnDisableToken.IsCancellationRequested)
             {
                 Stop();
