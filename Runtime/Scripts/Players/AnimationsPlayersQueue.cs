@@ -20,6 +20,12 @@ namespace AnimationPlayers.Players
 
         public override async UniTask AsyncPlay()
         {
+            if (OnDisableToken.IsCancellationRequested)
+            {
+                Stop();
+                return;
+            }
+
             Prepare();
 
             foreach (BasePlayer player in _players)
@@ -46,6 +52,12 @@ namespace AnimationPlayers.Players
             {
                 player.Prepare();
             }
+        }
+
+        public override void Stop()
+        {
+            foreach (BasePlayer player in _players)
+                player.Stop();
         }
     }
 }

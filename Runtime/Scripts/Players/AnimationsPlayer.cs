@@ -13,36 +13,56 @@ namespace AnimationPlayers.Players
 
         public IReadOnlyList<IReadOnlyAnimation> Animations => _animations.AsReadOnly();
 
+        private List<Sequence> _currentSequences = new();
+
         private int MaxOrder => _animations.Max(x => x.Order);
         private int MinOrder => _animations.Min(x => x.Order);
 
         public override void Play(Action onCompleteCallback = null)
         {
-            List<Sequence> sequences = PrepareForPlay();
+            _currentSequences = PrepareForPlay();
 
-            if (sequences.Count <= 0)
+            if (_currentSequences.Count <= 0)
                 return;
 
-            Sequence lastSequence = sequences.Last();
-            lastSequence.OnComplete(() => onCompleteCallback?.Invoke());
+            Sequence lastSequence = _currentSequences.Last();
+            lastSequence.OnComplete(() =>
+            {
+                _currentSequences.Clear();
+                onCompleteCallback?.Invoke();
+            });
 
-            ProcessSequences(sequences);
+            ProcessSequences(_currentSequences);
 
-            sequences.First().Play();
+            _currentSequences.First().Play();
         }
 
         public override async UniTask AsyncPlay()
         {
-            List<Sequence> sequences = PrepareForPlay();
-
-            if (sequences.Count <= 0)
+            if (OnDisableToken.IsCancellationRequested)
                 return;
 
-            Sequence lastSequence = sequences.Last();
+            _currentSequences = PrepareForPlay();
 
-            ProcessSequences(sequences);
+            if (_currentSequences.Count <= 0)
+                return;
 
-            sequences.First().Play();
+            Sequence lastSequence = _currentSequences.Last();
+
+            ProcessSequences(_currentSequences);
+
+            _currentSequences.First().Play();
+
+            while (lastSequence.IsPlaying())
+            {
+                if (OnDisableToken.IsCancellationRequested)
+                {
+                    Stop();
+                    return;
+                }
+
+                await UniTask.Yield();
+            }
 
             await lastSequence.AsyncWaitForCompletion();
         }
@@ -92,11 +112,26 @@ namespace AnimationPlayers.Players
         {
             if (sequences.Count > 1)
             {
-                for (int i = 0, x = 1; i < sequences.Count - 1; i++, x++)
+                for (int i = 0; i < sequences.Count - 1; i++)
                 {
-                    sequences[i].OnComplete(() => sequences[x]?.Play());
+                    sequences[i].OnComplete(() =>
+                    {
+                        if (OnDisableToken.IsCancellationRequested)
+                            Stop();
+
+                        int nextId = i++;
+
+                        if (sequences.Count > nextId)
+                            sequences[nextId]?.Play();
+                    });
                 }
             }
+        }
+
+        public override void Stop()
+        {
+            foreach (Sequence sequence in _currentSequences)
+                sequence.Kill();
         }
     }
 }

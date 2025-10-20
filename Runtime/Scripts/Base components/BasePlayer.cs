@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using System;
+using System.Threading;
 using UnityEngine;
 
 namespace AnimationPlayers.Players
@@ -12,6 +13,7 @@ namespace AnimationPlayers.Players
         [SerializeField] private AutoCall _autoCall;
 
         private GroupedAnimationPlayers _parentPlayer;
+        protected CancellationTokenSource _onDisableCancellationTokenSource;
 
         public enum AutoCall
         {
@@ -20,6 +22,9 @@ namespace AnimationPlayers.Players
             OnEnable
         }
 
+        protected AutoCall Call => _autoCall;
+
+        protected CancellationToken OnDisableToken => _onDisableCancellationTokenSource != null ? _onDisableCancellationTokenSource.Token : new CancellationToken(true);
         public bool IsUsingInUI => IsUI;
 
         private void Awake()
@@ -38,22 +43,32 @@ namespace AnimationPlayers.Players
 
         private void OnEnable()
         {
-            if (_parentPlayer != null)
-                return;
+            _onDisableCancellationTokenSource = new CancellationTokenSource();
 
-            if (_autoCall == AutoCall.OnEnable)
+            if (_autoCall == AutoCall.OnEnable && _parentPlayer == null)
                 Play();
         }
 
         private void OnDisable()
         {
-            this.DOKill();
+            _onDisableCancellationTokenSource.Cancel();
+            _onDisableCancellationTokenSource.Dispose();
+            _onDisableCancellationTokenSource = null;
+
+            Stop();
+
+            if (_autoCall != AutoCall.None)
+                Prepare();
         }
+
+        protected virtual void OnDisableVirtual() { }
 
         public abstract void Play(Action onCompleteCallback = null);
 
         public abstract UniTask AsyncPlay();
 
         public abstract void Prepare();
+
+        public abstract void Stop();
     }
 }

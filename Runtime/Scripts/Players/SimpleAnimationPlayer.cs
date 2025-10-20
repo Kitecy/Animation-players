@@ -9,6 +9,8 @@ namespace AnimationPlayers.Players
     {
         [SerializeField] private Animation _playableAnimation;
 
+        private Tween _currentTween;
+
         public IReadOnlyAnimation Animation => _playableAnimation;
 
         public override void Play(Action onCompleteCallback = null)
@@ -19,10 +21,13 @@ namespace AnimationPlayers.Players
 
         public override async UniTask AsyncPlay()
         {
-            Tween tween = PrepareForPlay();
-            tween.Play();
+            if (OnDisableToken.IsCancellationRequested)
+                return;
 
-            await tween.AsyncWaitForCompletion();
+            _currentTween = PrepareForPlay();
+            _currentTween.Play();
+
+            await _currentTween.AsyncWaitForCompletion();
         }
 
         public override void Prepare()
@@ -34,6 +39,11 @@ namespace AnimationPlayers.Players
         {
             Prepare();
             return _playableAnimation.Convert(this, IsUI);
+        }
+
+        public override void Stop()
+        {
+            _currentTween.Kill();
         }
     }
 }
