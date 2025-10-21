@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using UnityEngine;
 
 namespace AnimationPlayers.Players
@@ -15,6 +14,7 @@ namespace AnimationPlayers.Players
         [SerializeField] private BasePlayer _player;
         [SerializeField] private List<BasePlayer> _players;
         [SerializeField] private float _interval = 0.125f;
+        [SerializeField] private float _delay = 0;
 
         private WaitForSeconds _intervalWait;
 
@@ -61,7 +61,13 @@ namespace AnimationPlayers.Players
 
             Prepare();
 
-            TimeSpan delay = TimeSpan.FromSeconds(_interval);
+            TimeSpan interval = TimeSpan.FromSeconds(_interval);
+
+            if (_delay > 0)
+            {
+                TimeSpan delay = TimeSpan.FromSeconds(_delay);
+                await UniTask.Delay(delay, cancellationToken: OnDisableToken);
+            }
 
             if (OnDisableToken.IsCancellationRequested)
             {
@@ -72,7 +78,7 @@ namespace AnimationPlayers.Players
             if (_player != null)
             {
                 await _player.AsyncPlay();
-                await UniTask.Delay(delay, cancellationToken: OnDisableToken);
+                await UniTask.Delay(interval, cancellationToken: OnDisableToken);
             }
 
 
@@ -81,7 +87,7 @@ namespace AnimationPlayers.Players
                 _players[i].AsyncPlay().Forget();
 
                 if (i < _players.Count - 1)
-                    await UniTask.Delay(delay, cancellationToken: OnDisableToken);
+                    await UniTask.Delay(interval, cancellationToken: OnDisableToken);
             }
         }
 

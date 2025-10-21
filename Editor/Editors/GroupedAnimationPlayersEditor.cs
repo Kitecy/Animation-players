@@ -11,6 +11,7 @@ namespace AnimationPlayers.Editor
         private readonly string _playersListFieldName = "_players";
         private readonly string _playerFieldName = "_player";
         private readonly string _intervalFieldName = "_interval";
+        private readonly string _delayFieldName = "_delay";
 
         public override void OnInspectorGUI()
         {
@@ -19,10 +20,12 @@ namespace AnimationPlayers.Editor
             SerializedProperty playerField = serializedObject.FindProperty(_playerFieldName);
             SerializedProperty playersListField = serializedObject.FindProperty(_playersListFieldName);
             SerializedProperty intervalField = serializedObject.FindProperty(_intervalFieldName);
+            SerializedProperty delayField = serializedObject.FindProperty(_delayFieldName);
 
             EditorGUILayout.LabelField(_playerSettingsLabel);
             EditorGUILayout.PropertyField(playerField);
             EditorGUILayout.PropertyField(intervalField);
+            EditorGUILayout.PropertyField(delayField);
             base.OnInspectorGUI();
 
             EditorGUILayout.Space();
