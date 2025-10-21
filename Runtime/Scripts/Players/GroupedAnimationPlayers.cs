@@ -29,12 +29,6 @@ namespace AnimationPlayers.Players
             }
         }
 
-        protected override void OnDisableVirtual()
-        {
-            if (Call != AutoCall.None)
-                Prepare();
-        }
-
         public override void Play(Action onCompleteCallback = null)
         {
             if (_players.Count == 0)

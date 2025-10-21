@@ -45,6 +45,9 @@ namespace AnimationPlayers.Players
         {
             _onDisableCancellationTokenSource = new CancellationTokenSource();
 
+            if (_autoCall != AutoCall.None)
+                Prepare();
+
             if (_autoCall == AutoCall.OnEnable && _parentPlayer == null)
                 Play();
         }
@@ -56,12 +59,7 @@ namespace AnimationPlayers.Players
             _onDisableCancellationTokenSource = null;
 
             Stop();
-
-            if (_autoCall != AutoCall.None)
-                Prepare();
         }
-
-        protected virtual void OnDisableVirtual() { }
 
         public abstract void Play(Action onCompleteCallback = null);
 
