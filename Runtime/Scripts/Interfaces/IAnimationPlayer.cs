@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Threading;
 
 namespace AnimationPlayers.Players
 {
@@ -7,7 +8,7 @@ namespace AnimationPlayers.Players
     {
         void Play(Action onCompleteCallback);
 
-        UniTask AsyncPlay();
+        UniTask AsyncPlay(CancellationToken token);
 
         void Prepare();
     }

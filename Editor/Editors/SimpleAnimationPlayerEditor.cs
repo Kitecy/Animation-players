@@ -1,17 +1,21 @@
 using AnimationPlayers.Players;
 using UnityEditor;
-using UnityEngine;
 
 namespace AnimationPlayers.Editor
 {
     [CustomEditor(typeof(SimpleAnimationPlayer))]
+    [CanEditMultipleObjects]
     public class SimpleAnimationPlayerEditor : BaseEditor
     {
         private readonly string _animationFieldName = "_playableAnimation";
 
-        private void OnEnable()
+        private SerializedProperty _playableAnimationProp;
+
+        protected override void OnEnable()
         {
-            DrawableAnimation = serializedObject.FindProperty(_animationFieldName);
+            base.OnEnable();
+            _playableAnimationProp = serializedObject.FindProperty(_animationFieldName);
+            DrawableAnimation = (target as SimpleAnimationPlayer).Animation;
         }
 
         public override void OnInspectorGUI()
@@ -20,9 +24,7 @@ namespace AnimationPlayers.Editor
 
             base.OnInspectorGUI();
 
-            SerializedProperty playableAnimationField = serializedObject.FindProperty(_animationFieldName);
-
-            EditorGUILayout.PropertyField(playableAnimationField);
+            EditorGUILayout.PropertyField(_playableAnimationProp);
 
             serializedObject.ApplyModifiedProperties();
         }

@@ -1,4 +1,4 @@
-using AnimationPlayer.Editor.Utils;
+using AnimationPlayers.Players;
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -8,7 +8,9 @@ namespace AnimationPlayers.Editor
 {
     public abstract class BaseEditor : UnityEditor.Editor
     {
-        [NonSerialized] protected SerializedProperty DrawableAnimation = null;
+        protected const string MultipleEditingError = "Changing this parameter is not supported in multi edit mode.";
+
+        [NonSerialized] protected IReadOnlyAnimation DrawableAnimation = null;
 
         protected string AnimationRecordName = "Animation Edit";
 
@@ -24,50 +26,52 @@ namespace AnimationPlayers.Editor
         private readonly string _isUiFieldName = "IsUI";
         private readonly string _autoCallFieldName = "_autoCall";
 
+        private SerializedProperty _isUIField;
+        private SerializedProperty _autoCallField;
+
+        protected virtual void OnEnable()
+        {
+            _isUIField = serializedObject.FindProperty(_isUiFieldName);
+            _autoCallField = serializedObject.FindProperty(_autoCallFieldName);
+        }
+
         protected void OnSceneGUI()
         {
-            if (DrawableAnimation != null)
-            {
-                SerializedProperty typeField = DrawableAnimation.FindPropertyRelative(AnimationFieldsNames.TypeField);
+            if (DrawableAnimation == null)
+                return;
 
-                if ((Animation.Type)typeField.intValue == Animation.Type.Position)
-                    DrawHandles();
-            }
+            if (DrawableAnimation.Sort == Animation.Type.Position)
+                DrawHandles();
         }
 
         public override void OnInspectorGUI()
         {
-            SerializedProperty isUIField = serializedObject.FindProperty(_isUiFieldName);
-            SerializedProperty autoCallField = serializedObject.FindProperty(_autoCallFieldName);
-
-            EditorGUILayout.PropertyField(isUIField);
-            EditorGUILayout.PropertyField(autoCallField);
+            EditorGUILayout.PropertyField(_isUIField);
+            EditorGUILayout.PropertyField(_autoCallField);
         }
 
         protected virtual void DrawHandles()
         {
-            serializedObject.Update();
-
             EditorGUI.BeginChangeCheck();
 
-            SerializedProperty startPositionField = DrawableAnimation.FindPropertyRelative(AnimationFieldsNames.StartPositionField);
-            SerializedProperty endPositionField = DrawableAnimation.FindPropertyRelative(AnimationFieldsNames.EndPositionField);
+            Animation animation = DrawableAnimation as Animation;
 
-            DrawLabel(startPositionField.vector3Value + LabelOffset, StartPositionHandleName, StartPositionHandleColor);
-            DrawLabel(endPositionField.vector3Value + LabelOffset, EndPositionHandleName, EndPositionHandleColor);
+            Vector3 startPositionField = animation.StartPosition;
+            Vector3 endPositionField = animation.EndPosition;
 
-            Vector3 endPosition = Handles.PositionHandle(endPositionField.vector3Value, Quaternion.identity);
-            Vector3 startPosition = Handles.PositionHandle(startPositionField.vector3Value, Quaternion.identity);
+            DrawLabel(startPositionField + LabelOffset, StartPositionHandleName, StartPositionHandleColor);
+            DrawLabel(endPositionField + LabelOffset, EndPositionHandleName, EndPositionHandleColor);
+
+            Vector3 endPosition = Handles.PositionHandle(endPositionField, Quaternion.identity);
+            Vector3 startPosition = Handles.PositionHandle(startPositionField, Quaternion.identity);
             Handles.DrawLine(startPosition, endPosition);
 
             if (EditorGUI.EndChangeCheck())
             {
-                Undo.RecordObject(serializedObject.targetObject, AnimationRecordName);
-                startPositionField.vector3Value = startPosition;
-                endPositionField.vector3Value = endPosition;
+                Undo.RecordObject(target, AnimationRecordName);
+                animation.SetStartPosition(startPosition);
+                animation.SetEndPosition(endPosition);
             }
-
-            serializedObject.ApplyModifiedProperties();
         }
 
         protected void DrawLabel(Vector3 position, string label, Color color)

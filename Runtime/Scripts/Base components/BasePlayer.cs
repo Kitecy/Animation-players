@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace AnimationPlayers.Players
     {
         [SerializeField] protected bool IsUI;
 
-        [SerializeField] private AutoCall _autoCall;
+        [SerializeField] private AutoCall _autoCall = AutoCall.None;
 
         private GroupedAnimationPlayers _parentPlayer;
         protected CancellationTokenSource _onDisableCancellationTokenSource;
@@ -24,7 +25,6 @@ namespace AnimationPlayers.Players
 
         protected AutoCall Call => _autoCall;
 
-        protected CancellationToken OnDisableToken => _onDisableCancellationTokenSource != null ? _onDisableCancellationTokenSource.Token : new CancellationToken(true);
         public bool IsUsingInUI => IsUI;
 
         private void Awake()
@@ -34,39 +34,61 @@ namespace AnimationPlayers.Players
             if (_parentPlayer == this)
                 _parentPlayer = null;
 
-            if (_parentPlayer != null)
-                return;
-
-            if (_autoCall == AutoCall.Awake)
+            if (_autoCall == AutoCall.Awake && (_parentPlayer == null || _parentPlayer.enabled == false))
                 Play();
         }
 
         private void OnEnable()
         {
-            _onDisableCancellationTokenSource = new CancellationTokenSource();
-
             if (_autoCall != AutoCall.None)
                 Prepare();
 
-            if (_autoCall == AutoCall.OnEnable && _parentPlayer == null)
+            if (_autoCall == AutoCall.OnEnable && (_parentPlayer == null || _parentPlayer.enabled == false))
                 Play();
+
+            OnEnabled();
         }
 
         private void OnDisable()
         {
-            _onDisableCancellationTokenSource.Cancel();
-            _onDisableCancellationTokenSource.Dispose();
-            _onDisableCancellationTokenSource = null;
+            if (_onDisableCancellationTokenSource != null)
+            {
+                _onDisableCancellationTokenSource.Cancel();
+                _onDisableCancellationTokenSource.Dispose();
+                _onDisableCancellationTokenSource = null;
+            }
 
-            Stop();
+            OnDisabled();
+        }
+
+        protected virtual void OnEnabled() { }
+
+        protected virtual void OnDisabled() { }
+
+        protected CancellationToken GetOnDisableCancellationToken()
+        {
+            if (_onDisableCancellationTokenSource == null)
+                _onDisableCancellationTokenSource = new CancellationTokenSource();
+
+            return _onDisableCancellationTokenSource.Token;
+        }
+
+        protected CancellationTokenSource CombineTokensWithOnDisableToken(params CancellationToken[] tokens)
+        {
+            HashSet<CancellationToken> uniqueTokens = new(tokens);
+
+            var disableToken = GetOnDisableCancellationToken();
+
+            if (disableToken.CanBeCanceled)
+                uniqueTokens.Add(disableToken);
+
+            return CancellationTokenSource.CreateLinkedTokenSource(uniqueTokens.ToArray());
         }
 
         public abstract void Play(Action onCompleteCallback = null);
 
-        public abstract UniTask AsyncPlay();
+        public abstract UniTask AsyncPlay(CancellationToken token);
 
         public abstract void Prepare();
-
-        public abstract void Stop();
     }
 }

@@ -1,7 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace AnimationPlayers.Players
@@ -10,46 +10,32 @@ namespace AnimationPlayers.Players
     {
         [SerializeField] private List<BasePlayer> _players;
 
-        private int _currentPlayer = 0;
-
         public override void Play(Action onCompleteCallback = null)
         {
             if (_players.Count == 0)
                 return;
 
             Prepare();
-            _players.First().Play(() => PlayNext(onCompleteCallback));
+            PlayWithCallback(onCompleteCallback).Forget();
         }
 
-        public override async UniTask AsyncPlay()
+        private async UniTask PlayWithCallback(Action onCompleteCallback)
+        {
+            await AsyncPlay(GetOnDisableCancellationToken());
+            onCompleteCallback?.Invoke();
+        }
+
+        public override async UniTask AsyncPlay(CancellationToken token)
         {
             if (_players.Count == 0)
                 return;
 
-            if (OnDisableToken.IsCancellationRequested)
-            {
-                Stop();
-                return;
-            }
-
             Prepare();
 
+            CancellationTokenSource source = CombineTokensWithOnDisableToken(token);
+
             foreach (BasePlayer player in _players)
-                await player.AsyncPlay();
-        }
-
-        private void PlayNext(Action onCompleteCallback)
-        {
-            _currentPlayer++;
-
-            if (_currentPlayer < _players.Count)
-            {
-                _players[_currentPlayer].Play(() => PlayNext(onCompleteCallback));
-                return;
-            }
-
-            onCompleteCallback?.Invoke();
-            _currentPlayer = 0;
+                await player.AsyncPlay(source.Token);
         }
 
         public override void Prepare()
@@ -58,12 +44,6 @@ namespace AnimationPlayers.Players
             {
                 player.Prepare();
             }
-        }
-
-        public override void Stop()
-        {
-            foreach (BasePlayer player in _players)
-                player.Stop();
         }
     }
 }

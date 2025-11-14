@@ -1,19 +1,19 @@
 fileFormatVersion: 2
-guid: fd7dc65116f14d64db6f50f209351397
+guid: 481cfdf522408af4f8bbba6e777e3a99
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3836842400062419612
-    second: SimpleUIAnimationPlayerIcon_0
+      213: -7657321064302451260
+    second: TriggeredAnimationPlayerIcon_0
   - first:
-      213: -2260816057783185655
-    second: SimpleUIAnimationPlayerIcon_1
+      213: -4272543739333881285
+    second: TriggeredAnimationPlayerIcon_1
   - first:
-      213: -6693352695397989135
-    second: SimpleUIAnimationPlayerIcon_2
+      213: -5447912039486635400
+    second: TriggeredAnimationPlayerIcon_2
   - first:
-      213: -6736200115078959554
-    second: SimpleUIAnimationPlayerIcon_3
+      213: 1908508268106529021
+    second: TriggeredAnimationPlayerIcon_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -66,7 +66,7 @@ TextureImporter:
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
-  textureType: 2
+  textureType: 8
   textureShape: 1
   singleChannelComponent: 0
   flipbookRows: 1
@@ -148,13 +148,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: SimpleUIAnimationPlayerIcon_0
+      name: TriggeredAnimationPlayerIcon_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 53
-        width: 36
-        height: 36
+        x: 10
+        y: 7
+        width: 75
+        height: 74
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,20 +163,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c92b0ea95d33f3530800000000000000
-      internalID: 3836842400062419612
+      spriteID: 4c5e22fef0bbbb590800000000000000
+      internalID: -7657321064302451260
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SimpleUIAnimationPlayerIcon_1
+      name: TriggeredAnimationPlayerIcon_1
       rect:
         serializedVersion: 2
-        x: 53
-        y: 53
-        width: 36
-        height: 36
+        x: 13
+        y: 63
+        width: 45
+        height: 34
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -185,20 +185,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 90f855516c7ff90e0800000000000000
-      internalID: -2260816057783185655
+      spriteID: b325fa12b10e4b4c0800000000000000
+      internalID: -4272543739333881285
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SimpleUIAnimationPlayerIcon_2
+      name: TriggeredAnimationPlayerIcon_2
       rect:
         serializedVersion: 2
-        x: 11
-        y: 11
-        width: 36
-        height: 36
+        x: 57
+        y: 63
+        width: 17
+        height: 31
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -207,20 +207,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 1f4466abf2f6c13a0800000000000000
-      internalID: -6693352695397989135
+      spriteID: 87243d64dd02564b0800000000000000
+      internalID: -5447912039486635400
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: SimpleUIAnimationPlayerIcon_3
+      name: TriggeredAnimationPlayerIcon_3
       rect:
         serializedVersion: 2
-        x: 53
-        y: 11
-        width: 36
-        height: 36
+        x: 73
+        y: 63
+        width: 18
+        height: 31
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -229,8 +229,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e3ee5cc6fa53482a0800000000000000
-      internalID: -6736200115078959554
+      spriteID: df8b26b78226c7a10800000000000000
+      internalID: 1908508268106529021
       vertices: []
       indices: 
       edges: []
@@ -248,7 +248,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      TriggeredAnimationPlayerIcon_0: -7657321064302451260
+      TriggeredAnimationPlayerIcon_1: -4272543739333881285
+      TriggeredAnimationPlayerIcon_2: -5447912039486635400
+      TriggeredAnimationPlayerIcon_3: 1908508268106529021
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

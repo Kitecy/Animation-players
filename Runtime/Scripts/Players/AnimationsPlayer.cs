@@ -3,13 +3,14 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace AnimationPlayers.Players
 {
     public class AnimationsPlayer : BasePlayer
     {
-        [SerializeField] private List<Animation> _animations = new();
+        [SerializeReference] private List<Animation> _animations = new();
 
         public IReadOnlyList<IReadOnlyAnimation> Animations => _animations.AsReadOnly();
 
@@ -20,12 +21,13 @@ namespace AnimationPlayers.Players
 
         public override void Play(Action onCompleteCallback = null)
         {
-            _currentSequences = PrepareForPlay();
+            _currentSequences = PrepareForPlay(GetOnDisableCancellationToken());
 
             if (_currentSequences.Count == 0)
                 return;
 
             Sequence lastSequence = _currentSequences.Last();
+
             lastSequence.OnComplete(() =>
             {
                 _currentSequences.Clear();
@@ -37,12 +39,20 @@ namespace AnimationPlayers.Players
             _currentSequences.First().Play();
         }
 
-        public override async UniTask AsyncPlay()
+        public void Play(string name, Action onCompleteCallback = null)
         {
-            if (OnDisableToken.IsCancellationRequested)
+            Animation animation = GetPreparedAnimation(name);
+
+            if (animation == null)
                 return;
 
-            _currentSequences = PrepareForPlay();
+            Tween tween = animation.Convert(this, IsUI, GetOnDisableCancellationToken());
+            tween.Play().OnComplete(() => onCompleteCallback.Invoke());
+        }
+
+        public override async UniTask AsyncPlay(CancellationToken token)
+        {
+            _currentSequences = PrepareForPlay(token);
 
             if (_currentSequences.Count == 0)
                 return;
@@ -51,20 +61,22 @@ namespace AnimationPlayers.Players
 
             ProcessSequences(_currentSequences);
 
-            _currentSequences.First().Play();
-
-            while (lastSequence.IsPlaying())
-            {
-                if (OnDisableToken.IsCancellationRequested)
-                {
-                    Stop();
-                    return;
-                }
-
-                await UniTask.Yield();
-            }
+            _ = _currentSequences.First().Play();
 
             await lastSequence.AsyncWaitForCompletion();
+        }
+
+        public async UniTask AsyncPlay(string name, CancellationToken token)
+        {
+            Animation animation = GetPreparedAnimation(name);
+
+            if (animation == null)
+                return;
+
+            CancellationTokenSource source = CombineTokensWithOnDisableToken(token);
+
+            Tween tween = animation.Convert(this, IsUI, source.Token);
+            await tween.Play();
         }
 
         public override void Prepare()
@@ -75,9 +87,25 @@ namespace AnimationPlayers.Players
                 animation.Prepare(this, IsUI);
         }
 
-        private List<Sequence> CreateSequences()
+        private Animation GetPreparedAnimation(string name)
+        {
+            Animation animation = _animations.FirstOrDefault(anim => anim.Name == name);
+
+            if (animation == null)
+            {
+                Debug.LogError("An animation with this name was not found.");
+                return null;
+            }
+
+            animation.Prepare(this, IsUI);
+            return animation;
+        }
+
+        private List<Sequence> CreateSequences(CancellationToken token)
         {
             List<Sequence> sequences = new List<Sequence>();
+
+            CancellationTokenSource source = CombineTokensWithOnDisableToken(token);
 
             for (int order = MinOrder; order <= MaxOrder; order++)
             {
@@ -89,9 +117,11 @@ namespace AnimationPlayers.Players
 
                     foreach (Animation animation in animationsInOrder)
                     {
-                        Tween tween = animation.Convert(this, IsUI);
+                        Tween tween = animation.Convert(this, IsUI, source.Token);
                         sequence.Join(tween);
                     }
+
+                    sequence.WithCancellation(source.Token);
 
                     sequences.Add(sequence);
                 }
@@ -100,10 +130,10 @@ namespace AnimationPlayers.Players
             return sequences;
         }
 
-        private List<Sequence> PrepareForPlay()
+        private List<Sequence> PrepareForPlay(CancellationToken token)
         {
             Prepare();
-            List<Sequence> sequences = CreateSequences();
+            List<Sequence> sequences = CreateSequences(token);
 
             return sequences;
         }
@@ -116,9 +146,6 @@ namespace AnimationPlayers.Players
                 {
                     sequences[i].OnComplete(() =>
                     {
-                        if (OnDisableToken.IsCancellationRequested)
-                            Stop();
-
                         int nextId = i++;
 
                         if (sequences.Count > nextId)
@@ -126,12 +153,6 @@ namespace AnimationPlayers.Players
                     });
                 }
             }
-        }
-
-        public override void Stop()
-        {
-            foreach (Sequence sequence in _currentSequences)
-                sequence.Kill();
         }
     }
 }

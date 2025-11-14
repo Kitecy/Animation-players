@@ -5,6 +5,7 @@ using UnityEngine;
 namespace AnimationPlayers.Editor
 {
     [CustomEditor(typeof(GroupedAnimationPlayers))]
+    [CanEditMultipleObjects]
     public class GroupedAnimationPlayersEditor : BaseEditor
     {
         private readonly string _playerSettingsLabel = "Player settings";
@@ -18,7 +19,10 @@ namespace AnimationPlayers.Editor
             serializedObject.Update();
 
             SerializedProperty playerField = serializedObject.FindProperty(_playerFieldName);
-            SerializedProperty playersListField = serializedObject.FindProperty(_playersListFieldName);
+            SerializedProperty playersListField = null;
+
+            playersListField = serializedObject.FindProperty(_playersListFieldName);
+
             SerializedProperty intervalField = serializedObject.FindProperty(_intervalFieldName);
             SerializedProperty delayField = serializedObject.FindProperty(_delayFieldName);
 
@@ -29,6 +33,7 @@ namespace AnimationPlayers.Editor
             base.OnInspectorGUI();
 
             EditorGUILayout.Space();
+
             EditorGUILayout.PropertyField(playersListField);
 
             GameObject go = ((MonoBehaviour)target).gameObject;
@@ -46,7 +51,10 @@ namespace AnimationPlayers.Editor
 
         private void OnFindButtonClicked()
         {
-            (target as GroupedAnimationPlayers).SetPlayersFromChildren();
+            foreach (var player in targets)
+            {
+                (player as GroupedAnimationPlayers).SetPlayersFromChildren();
+            }
         }
     }
 }

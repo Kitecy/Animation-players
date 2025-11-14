@@ -1,6 +1,4 @@
 using AnimationPlayers.Players;
-using System.Collections.Generic;
-using System.Reflection;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -9,26 +7,26 @@ using Animation = AnimationPlayers.Players.Animation;
 namespace AnimationPlayers.Editor
 {
     [CustomEditor(typeof(AnimationsPlayer))]
+    [CanEditMultipleObjects]
     public class AnimationsPlayerEditor : BaseEditor
     {
         private readonly string _playerSettingsLabel = "Player settings";
 
         private string _animationsFieldName = "_animations";
         private string _animationsFieldLabel = "Animations";
-        private List<Animation> _animations = new();
         private SerializedProperty _listProperty;
 
-        private string _typeFieldName = "_type";
         private ReorderableList _list;
 
-        private void Reset()
-        {
-            Initialize();
-        }
+        private AnimationsPlayer _player;
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            Initialize();
+            base.OnEnable();
+
+            _player = (target as AnimationsPlayer);
+
+            _listProperty = serializedObject.FindProperty(_animationsFieldName);
 
             _list = new ReorderableList(serializedObject, _listProperty);
             _list.drawHeaderCallback += (rect) => EditorGUI.LabelField(rect, _animationsFieldLabel);
@@ -49,46 +47,65 @@ namespace AnimationPlayers.Editor
 
             EditorGUILayout.Space();
 
-            _list.DoLayoutList();
+            if (targets.Length <= 1)
+                _list.DoLayoutList();
+            else
+                EditorGUILayout.LabelField(MultipleEditingError);
+
             serializedObject.ApplyModifiedProperties();
-        }
-
-        private void Initialize()
-        {
-            _listProperty = serializedObject.FindProperty(_animationsFieldName);
-
-            AnimationsPlayer player = target as AnimationsPlayer;
-            FieldInfo animationsField = player.GetType().GetField(_animationsFieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-
-            _animations = animationsField.GetValue(player) as List<Animation>;
         }
 
         private void AddElement(ReorderableList list)
         {
-            _animations.Add(new());
-            SceneView.RepaintAll();
+            foreach (var t in targets)
+            {
+                SerializedObject player = new SerializedObject(t);
+
+                SerializedProperty listProperty = player.FindProperty(_animationsFieldName);
+
+                listProperty.arraySize++;
+
+                SerializedProperty newElement = listProperty.GetArrayElementAtIndex(listProperty.arraySize - 1);
+
+                newElement.managedReferenceValue = new Animation();
+
+                player.ApplyModifiedProperties();
+                SceneView.RepaintAll();
+            }
         }
 
         private void RemoveElement(ReorderableList list)
         {
-            if (DrawableAnimation == _listProperty.GetArrayElementAtIndex(list.index))
+            foreach (var t in targets)
             {
-                DrawableAnimation = null;
-                SceneView.RepaintAll();
-            }
+                SerializedObject player = new SerializedObject(t);
+                SerializedProperty listProperty = player.FindProperty(_animationsFieldName);
 
-            _animations.RemoveAt(list.index);
+                IReadOnlyAnimation animation = (t as AnimationsPlayer).Animations[list.index];
+
+                if (DrawableAnimation == animation)
+                {
+                    DrawableAnimation = null;
+                    SceneView.RepaintAll();
+                }
+
+                listProperty.DeleteArrayElementAtIndex(list.index);
+
+                player.ApplyModifiedProperties();
+            }
         }
 
         private void ReorderList(ReorderableList list, int oldIndex, int newIndex)
         {
-            Animation movedItem = _animations[oldIndex];
-            _animations.RemoveAt(oldIndex);
+            foreach (var t in targets)
+            {
+                SerializedObject player = new SerializedObject(t);
+                SerializedProperty listProperty = player.FindProperty(_animationsFieldName);
 
-            if (newIndex > oldIndex)
-                newIndex--;
+                listProperty.MoveArrayElement(oldIndex, newIndex);
 
-            _animations.Insert(newIndex, movedItem);
+                player.ApplyModifiedProperties();
+            }
         }
 
         private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
@@ -98,8 +115,22 @@ namespace AnimationPlayers.Editor
             SerializedProperty element = _listProperty.GetArrayElementAtIndex(index);
             EditorGUI.PropertyField(rect, element);
 
-            if (element.isExpanded && (Animation.Type)element.FindPropertyRelative(_typeFieldName).enumValueIndex == Animation.Type.Position)
-                DrawEditButton(new Rect(rect.x, rect.y + EditorGUI.GetPropertyHeight(element), rect.width, EditorGUIUtility.singleLineHeight), index);
+            Rect position = new Rect(rect.x, rect.y + EditorGUI.GetPropertyHeight(element), rect.width, EditorGUIUtility.singleLineHeight);
+
+            if (element.isExpanded)
+            {
+                if (targets.Length <= 1)
+                {
+                    Animation animation = element.managedReferenceValue as Animation;
+
+                    if (animation != null && animation.Sort == Animation.Type.Position)
+                        DrawEditButton(position, index);
+                }
+                else
+                {
+                    EditorGUI.LabelField(position, MultipleEditingError);
+                }
+            }
 
             EditorGUI.indentLevel--;
         }
@@ -111,7 +142,9 @@ namespace AnimationPlayers.Editor
             if (element.isExpanded == false)
                 return EditorGUIUtility.singleLineHeight;
 
-            if ((Animation.Type)element.FindPropertyRelative(_typeFieldName).enumValueIndex == Animation.Type.Position)
+            Animation animation = element.managedReferenceValue as Animation;
+
+            if (animation != null && animation.Sort == Animation.Type.Position)
                 return EditorGUI.GetPropertyHeight(element) + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             else
                 return EditorGUI.GetPropertyHeight(element);
@@ -124,7 +157,7 @@ namespace AnimationPlayers.Editor
             if (DrawableAnimation == null)
                 isSelected = false;
             else
-                isSelected = DrawableAnimation.propertyPath == _listProperty.GetArrayElementAtIndex(elementIndex).propertyPath;
+                isSelected = DrawableAnimation == _player.Animations[elementIndex];
 
             string text = isSelected ? "Stop edit" : "Edit";
 
@@ -141,7 +174,7 @@ namespace AnimationPlayers.Editor
 
         private void SelectElement(int index)
         {
-            DrawableAnimation = _listProperty.GetArrayElementAtIndex(index);
+            DrawableAnimation = _player.Animations[index];
         }
     }
 }

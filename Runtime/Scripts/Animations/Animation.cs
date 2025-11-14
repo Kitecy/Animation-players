@@ -8,6 +8,8 @@ namespace AnimationPlayers.Players
     [Serializable]
     public class Animation : IReadOnlyAnimation
     {
+        public const float MinDurationValue = 0.001f;
+
         public enum Type
         {
             Position,
@@ -86,5 +88,90 @@ namespace AnimationPlayers.Players
         public Vector2 EndAnchorPosition => _endAnchoredPosition;
 
         public float TotalDuration => _duration + _delay;
+
+        public void SetName(string value) =>
+            _name = value;
+
+        public void SetOrder(int value) =>
+            _order = value;
+
+        public void SetDuration(float value)
+        {
+            if (value < MinDurationValue)
+                value = MinDurationValue;
+
+            _duration = value;
+        }
+
+        public void SetDelay(float value)
+        {
+            if (value < 0)
+                value = 0;
+
+            _delay = value;
+        }
+
+        public void SetIsEternalLoop(bool value) =>
+            _isEternalLoop = value;
+
+        public void SetLoops(int value) =>
+            _loops = value;
+
+        public void SetLoopType(LoopType value) =>
+            _loopType = value;
+
+        public void SetEase(Ease value) =>
+            _ease = value;
+
+        public void SetType(Type value) =>
+            _type = value;
+
+        public void SetStartPosition(Vector3 value) =>
+            _startPosition = value;
+
+        public void SetEndPosition(Vector3 value) =>
+            _endPosition = value;
+
+        public void SetStartRotation(Vector3 value) =>
+            _startRotation = value;
+
+        public void SetEndRotation(Vector3 value) =>
+            _endRotation = value;
+
+        public void SetStartScale(Vector3 value) =>
+            _startScale = value;
+
+        public void SetEndScale(Vector3 value) =>
+            _endScale = value;
+
+        public void SetStartColor(Color value) =>
+            _startColor = value;
+
+        public void SetEndColor(Color value) =>
+            _endColor = value;
+
+        public void SetRenderer(Renderer value) =>
+            _renderer = value;
+
+        public void SetGraphic(Graphic value) =>
+            _graphic = value;
+
+        public void SetStartFade(float value)
+        {
+            value = Mathf.Clamp01(value);
+            _startFade = value;
+        }
+
+        public void SetEndFade(float value)
+        {
+            value = Mathf.Clamp01(value);
+            _endFade = value;
+        }
+
+        public void SetStartAnchoredPosition(Vector2 value) =>
+            _startAnchoredPosition = value;
+
+        public void SetEndAnchoredPosition(Vector2 value) =>
+            _endAnchoredPosition = value;
     }
 }

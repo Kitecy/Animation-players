@@ -1,12 +1,13 @@
 using Cysharp.Threading.Tasks;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace AnimationPlayers.Players
 {
+    [DisallowMultipleComponent]
     public class GroupedAnimationPlayers : BasePlayer
     {
         private readonly string _error = "You cannot specify this component in this field!";
@@ -15,10 +16,6 @@ namespace AnimationPlayers.Players
         [SerializeField] private List<BasePlayer> _players;
         [SerializeField] private float _interval = 0.125f;
         [SerializeField] private float _delay = 0;
-
-        private WaitForSeconds _intervalWait;
-
-        private int _currentPlayer = -1;
 
         private void OnValidate()
         {
@@ -34,54 +31,48 @@ namespace AnimationPlayers.Players
             if (_players.Count == 0)
                 return;
 
-            PlayInternal(onCompleteCallback).Forget();
+            PlayWithCallback(onCompleteCallback).Forget();
         }
 
-        private async UniTaskVoid PlayInternal(Action onCompleteCallback)
+        private async UniTaskVoid PlayWithCallback(Action onCompleteCallback)
         {
             if (_player != null && _player.didStart == false)
                 await UniTask.Yield();
-            else if (_players.First()?.didStart == false)
-                await UniTask.Yield();
 
-            await AsyncPlay();
+            await AsyncPlay(GetOnDisableCancellationToken());
             onCompleteCallback?.Invoke();
         }
 
-        public override async UniTask AsyncPlay()
+        public override async UniTask AsyncPlay(CancellationToken token)
         {
             if (_players.Count == 0)
                 return;
 
             Prepare();
 
+            CancellationTokenSource source = CombineTokensWithOnDisableToken(token);
+
             TimeSpan interval = TimeSpan.FromSeconds(_interval);
 
             if (_delay > 0)
             {
                 TimeSpan delay = TimeSpan.FromSeconds(_delay);
-                await UniTask.Delay(delay, cancellationToken: OnDisableToken);
-            }
-
-            if (OnDisableToken.IsCancellationRequested)
-            {
-                Stop();
-                return;
+                await UniTask.Delay(delay, cancellationToken: source.Token);
             }
 
             if (_player != null)
             {
-                await _player.AsyncPlay();
-                await UniTask.Delay(interval, cancellationToken: OnDisableToken);
+                await _player.AsyncPlay(source.Token);
+                await UniTask.Delay(interval, cancellationToken: source.Token);
             }
 
 
             for (int i = 0; i < _players.Count; i++)
             {
-                _players[i].AsyncPlay().Forget();
+                _players[i].AsyncPlay(source.Token).Forget();
 
                 if (i < _players.Count - 1)
-                    await UniTask.Delay(interval, cancellationToken: OnDisableToken);
+                    await UniTask.Delay(interval, cancellationToken: source.Token);
             }
         }
 
@@ -96,25 +87,6 @@ namespace AnimationPlayers.Players
             _players = players;
         }
 
-        private IEnumerator ProcessNext(Action onCompleteCallback = null)
-        {
-            _currentPlayer++;
-
-            if (_currentPlayer < _players.Count)
-            {
-                _players[_currentPlayer].Play();
-
-                yield return _intervalWait;
-
-                StartCoroutine(ProcessNext(onCompleteCallback));
-
-                yield break;
-            }
-
-            onCompleteCallback?.Invoke();
-            _currentPlayer = -1;
-        }
-
         public override void Prepare()
         {
             if (_player != null)
@@ -122,15 +94,6 @@ namespace AnimationPlayers.Players
 
             foreach (BasePlayer player in _players)
                 player.Prepare();
-        }
-
-        public override void Stop()
-        {
-            if (_player != null)
-                _player.Stop();
-
-            foreach (BasePlayer player in _players)
-                player.Stop();
         }
     }
 }

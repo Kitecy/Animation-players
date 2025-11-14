@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System.Threading;
 using UnityEngine;
 
 namespace AnimationPlayers.Players
@@ -9,7 +11,7 @@ namespace AnimationPlayers.Players
         private const string PrepareError = "The type you are trying to prepare is not supported!";
         private const string UIError = "You can't use an Anchor-type animation not with a UI object!";
 
-        public static void Prepare(this Animation animation, BasePlayer player, bool isUI)
+        public static void Prepare(this IReadOnlyAnimation animation, BasePlayer player, bool isUI)
         {
             switch (animation.Sort)
             {
@@ -59,7 +61,7 @@ namespace AnimationPlayers.Players
             }
         }
 
-        public static Tween Convert(this Animation animation, BasePlayer player, bool isUI)
+        public static Tween Convert(this IReadOnlyAnimation animation, BasePlayer player, bool isUI, CancellationToken token)
         {
             if (animation == null)
                 throw new System.ArgumentNullException(nameof(animation));
@@ -109,6 +111,7 @@ namespace AnimationPlayers.Players
             }
 
             tween.SetDelay(animation.Delay).SetEase(animation.Ease).SetLoops(animation.Loops, animation.LoopType);
+            tween.WithCancellation(token);
 
             return tween;
         }

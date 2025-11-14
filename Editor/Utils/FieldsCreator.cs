@@ -13,10 +13,11 @@ namespace AnimationPlayer.Editor.Utils
             line++;
         }
 
-        public static void DrawFloatField(float value, string label, Rect position, ref int line)
+        public static float DrawFloatField(float value, string label, Rect position, ref int line)
         {
-            EditorGUI.FloatField(GetLine(position, line), label, value);
+            value = EditorGUI.FloatField(GetLine(position, line), label, value);
             line++;
+            return value;
         }
 
         public static float DrawFloatFieldWithMin(float min, float value, string label, Rect position, ref int line)

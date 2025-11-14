@@ -1,8 +1,11 @@
+using AnimationPlayers.Players;
 using UnityEditor;
 
 namespace AnimationPlayers.Editor
 {
-    public class AnimationsPlayersQueueEditor : UnityEditor.Editor
+    [CustomEditor(typeof(AnimationsPlayersQueue))]
+    [CanEditMultipleObjects]
+    public class AnimationsPlayersQueueEditor : BaseEditor
     {
         private readonly string _playersListFieldName = "_players";
 
@@ -10,7 +13,9 @@ namespace AnimationPlayers.Editor
         {
             serializedObject.Update();
 
-            SerializedProperty playersListField = serializedObject.FindProperty(_playersListFieldName);
+            SerializedProperty playersListField = null;
+
+            playersListField = serializedObject.FindProperty(_playersListFieldName);
 
             base.OnInspectorGUI();
 
